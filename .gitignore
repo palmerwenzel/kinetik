@@ -87,3 +87,12 @@ lib-cov/
 
 # Project Specific
 app-example
+
+# Environment files
+.env
+.env.*
+!.env.template
+
+# Firebase
+google-services.json
+GoogleService-Info.plist

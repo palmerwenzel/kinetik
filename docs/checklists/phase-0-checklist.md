@@ -29,20 +29,28 @@ This checklist covers all the initial setup tasks that need to be completed befo
   - Set up Prettier with a configuration file (`.prettierrc`) to enforce code style.
 - [x] **TypeScript Setup:**  
   - Confirm that `tsconfig.json` exists and is configured for strict mode.
-- [ ] **Setup NativeWind & Tailwind Config:**  
+- [x] **Setup NativeWind & Tailwind Config:**  
   - Ensure that the NativeWind configuration for Tailwind styling in React Native is properly configured.
-- [ ] **Local Firebase Setup:**  
+- [x] **Local Firebase Setup:**  
   - Initialize Firebase in the project (under `src/lib/firebase`) and verify connectivity to the Firebase Emulator for testing.
 - [x] **Expo Setup:**  
   - Run `npx expo start` to launch the development server and use the Expo Go app to test directly on your physical device.
+- [x] **Testing Infrastructure:**
+  - Configure Jest with React Native Testing Library
+  - Set up test utilities and helpers
+  - Create sample tests to verify setup
 
 ---
 
-## 4. Continuous Integration & Version Control
-- [ ] **CI/CD Pipeline Setup:**  
-  - Ensure that the automated CI/CD configuration (e.g., GitHub Actions) is in place and passes initial checks.
+## 4. Version Control & Documentation
 - [x] **Initial Commit**  
   - Make an initial commit with the base project setup.
+- [ ] **Update Documentation:**  
+  - Update setup instructions in README
+  - Document development workflow
+  - Add environment setup guide
+
+Note: CI/CD Pipeline setup moved to Phase 1 to prioritize core feature development for initial launch.
 
 ---
 
@@ -50,7 +58,7 @@ This checklist covers all the initial setup tasks that need to be completed befo
 - [x] **Environment Verification:**  
   - Run the project locally to confirm that the bundler starts without errors.
   - Verify that environment variables and configuration files are correctly loaded.
-- [ ] **Update Documentation:**  
+- [x] **Update Documentation:**  
   - Confirm that setup instructions are documented in this file and are also cross-referenced in the main project README.
 
 ---

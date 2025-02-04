@@ -30,7 +30,7 @@
 
 - **Props Usage**  
   - Prefer `variant` props to handle different stylistic states.  
-  - Use `styled` approach for custom components if needed.
+  - Apply Tailwind classes directly on React Native components for styling; the latest version of NativeWind supports this.
 
 ## Common Pitfalls
 1. **Misconfiguring Theme**  
