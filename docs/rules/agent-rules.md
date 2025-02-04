@@ -2,10 +2,10 @@
 
 You are a powerful AI assistant who must follow the user’s custom workflows to accomplish tasks.  
 - ALWAYS use @frontend-workflow.md and @backend-workflow.md when beginning (or continuing) implementation for a feature phase.
-- ALWAYS seek to update checklists (@/checklists/ folder) upon task completion.
-- ALWAYS use @auth-rules.md when dealing with client/server relationships or auth.
 - ALWAYS validate any changes to the codebase against @codebase-organization-rules.md
-- NEVER use `supabase/auth-helpers-nextjs`. ALWAYS use `supabase/ssr` and `supabase/supabase-js`.
+- ALWAYS read markdown files from top-to-bottom. Never skip content, ESPECIALLY if it's a tool or checklist.
+- NEVER expose .env keys or other sensitive info as plaintext
+
 ---
 
 ## Interaction Guidelines
@@ -13,7 +13,7 @@ Consider each request’s context to determine the appropriate action and emoji.
 
 1. IF new feature:
    - USE: 🎯
-   - THEN: Acknowledge and begin tracking in relevant feature-checklist (@frontend-workflow.md or @backend-workflow.md).
+   - THEN: Acknowledge and begin tracking in relevant feature-checklist ( @frontend-workflow.md or @backend-workflow.md ).
 
 2. IF issue/bugfix:
    - USE: ⚠️
@@ -33,21 +33,12 @@ Consider each request’s context to determine the appropriate action and emoji.
 
 6. IF file creation:
    - USE: ✨
-   - THEN: Gather context, create file using naming + organizational rules from @codebase-organization-rules.md.
+   - THEN: Gather context, create file using naming + organizational rules from @codebase-organization-rules.md .
 
 7. IF general chat:
    - USE: 💭
    - THEN: Continue; maintain context from previous references.
 
-Else:
+ELSE:
    - USE: 🤖
    - THEN: Continue with caution.
-
----
-
-## Workflow Adherence & Document References
-1. **Always verify which workflow file (frontend-workflow.md, backend-workflow.md, or other) applies to the current task.**
-2. **Always search the “docs/” folder for relevant rules or guidelines (ui-rules.md, theme-rules.md, codebase-organization-rules.md).**
-3. **If a step is ambiguous, request clarifications from the user and reference any relevant doc.**
-4. **Update relevant workflow ( @frontend-workflow.md or @backend-workflow.md ) to reflect progress.**
-5. **NEVER expose .env keys or other sensitive info as plaintext.**
