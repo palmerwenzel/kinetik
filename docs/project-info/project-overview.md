@@ -1,6 +1,6 @@
 # Kinetik
 
-## *Share Your Journey, Inspire Others*
+## _Share Your Journey, Inspire Others_
 
 ## Background
 
@@ -20,11 +20,13 @@ In a world where staying connected and engaged with your passions is vital, it c
 ## Define User Stories
 
 **User Stories (Creators)**:
+
 - "As a creator, I want to post daily snippets of my experiences so I can document my journey and inspire others."
 - "As a creator, I want to set privacy controls (public, friends-only, or group-specific) for each post so I can tailor who sees my content."
 - "As a creator, I want to tag my posts with relevant themes (e.g., reading, cooking, creating) to help others easily discover content that resonates with their interests."
 
 **User Stories (Viewers)**:
+
 - "As a viewer, I want to follow creators who interest me so I can share in their experiences."
 - "As a viewer, I want to interact with posts by liking and commenting to exchange ideas and show support."
 - "As a viewer, I want to view content grouped by my interests so I can continually find inspiration and learn new things."
@@ -32,6 +34,7 @@ In a world where staying connected and engaged with your passions is vital, it c
 ## Build Vertically
 
 Develop a complete feature that embodies the essence of Kinetik:
+
 - **Experience Sharing Pipeline**: Enable seamless group creation, flexible content posting with customizable privacy settings, and a dynamic feed that aggregates posts based on group membership and shared interests.
 
 Focus on delivering an intuitive and engaging experience that enhances accountability, strengthens bonds, and promotes continuous personal growth through shared experiences.

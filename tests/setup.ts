@@ -1,21 +1,21 @@
 /**
  * Jest setup file for React Native testing environment
  */
-import '@testing-library/jest-native/extend-expect';
+import "@testing-library/jest-native/extend-expect";
 
 // Mock Expo Router
-jest.mock('expo-router', () => ({
+jest.mock("expo-router", () => ({
   useRouter: () => ({
     push: jest.fn(),
     replace: jest.fn(),
     back: jest.fn(),
   }),
   useSegments: () => [],
-  usePathname: () => '',
+  usePathname: () => "",
 }));
 
 // Mock Firebase
-jest.mock('../src/lib/firebase/config', () => ({
+jest.mock("../src/lib/firebase/config", () => ({
   auth: {
     onAuthStateChanged: jest.fn(),
     signInWithEmailAndPassword: jest.fn(),
@@ -29,4 +29,4 @@ jest.mock('../src/lib/firebase/config', () => ({
   storage: {
     ref: jest.fn(),
   },
-})); 
+}));

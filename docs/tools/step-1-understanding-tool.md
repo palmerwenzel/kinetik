@@ -1,4 +1,5 @@
 # Understanding Workflow
+
 Goal: Understand the task and its requirements.
 
 ## Identify relevant documentation across the codebase to gather information about relevant guidelines, existing or related components, data models, and integration points.

@@ -15,7 +15,6 @@
   - [NativeWind Rules](../rules/nativewind-rules.md)
   - [React Navigation Rules](../rules/react-navigation-rules.md)
   - [React Query + Context Rules](../rules/react-query-rules.md)
-  
 - **Linting & Type Checking:**
   - Run ESLint and Prettier to ensure consistent code style.
   - Execute the TypeScript compiler to check for any type errors.
@@ -28,11 +27,9 @@
   - Follow @test-writing-rules.md for unit tests for any new components, functions, or modules using Jest and React Native Testing Library.
   - Add integration or end-to-end tests if necessary (e.g., using Detox or similar tools).
   - Include snapshot tests for visual components where appropriate.
-  
 - **Execute Tests:**
   - Run `npm test` to ensure all tests pass.
   - Confirm that edge cases, error states, and data transformation logic are properly covered.
-  
 - **Document Testing:**
   - Note any non-standard test scenarios or deviations.
   - Update relevant checklists or documentation if test updates reveal new validation requirements.

@@ -1,4 +1,5 @@
 # Planning Workflow
+
 Goal: Plan the implementation of the feature.
 
 ## Create a clear plan for how the feature will be implemented, with a comprehensive overview of the component tree and connectivity between components, and an understanding of how the feature will interact with the existing codebase.

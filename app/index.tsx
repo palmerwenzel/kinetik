@@ -1,26 +1,10 @@
-import { View, Text } from 'react-native';
-import { Button } from '../src/components/ui/Button';
-import { TestComponent } from '../src/components/ui/TestComponent';
-import '../global.css';
+import { Redirect } from "expo-router";
+import { useAuth } from "@/lib/auth/AuthContext";
+import "../global.css";
 
-export default function Home() {
-  return (
-    <View className="flex-1 items-center justify-center bg-bg-light dark:bg-bg-dark p-4">
-      <Text className="text-2xl font-bold mb-8 text-accent">
-        Welcome to Kinetik
-      </Text>
+export default function Index() {
+  const { user } = useAuth();
 
-      <View className="space-y-4 w-full max-w-sm">
-        <Button variant="primary">
-          Get Started
-        </Button>
-
-        <Button variant="secondary">
-          Learn More
-        </Button>
-
-        <TestComponent />
-      </View>
-    </View>
-  );
+  // Redirect to app index or login based on auth state
+  return <Redirect href={user ? "/(app)" : "/(auth)/login"} />;
 }

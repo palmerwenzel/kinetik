@@ -13,26 +13,28 @@ Organize the codebase by feature and domain. Below is a recommended directory st
 ```
 my-app/
 ├── app/                   // File-based routing with Expo Router
-│   ├── _layout.tsx        // Global layout and route configuration
-│   ├── index.tsx          // Home screen route
-│   ├── Auth/              // Authentication routes
-│   │   ├── LoginScreen.tsx
-│   │   └── SignupScreen.tsx
-│   ├── Feed/              // Feed routes
-│   │   └── FeedScreen.tsx
-│   ├── Groups/            // Groups routes
-│   │   └── GroupsScreen.tsx
-│   └── Profile/           // Profile routes
-│       └── ProfileScreen.tsx
+│   ├── _layout.tsx        // Root layout (auth check, providers)
+│   ├── index.tsx          // Initial route/splash
+│   ├── (auth)/            // Authentication routes (grouped)
+│   │   ├── _layout.tsx    // Auth layout (stack nav)
+│   │   ├── login.tsx
+│   │   └── signup.tsx
+│   ├── (app)/             // Main app group
+│   │   ├── _layout.tsx    // App layout (tab nav)
+│   │   ├── feed.tsx
+│   │   ├── profile.tsx
+│   │   └── settings.tsx
+│   └── [id]/              // Dynamic routes
+│       └── post.tsx
 ├── src/                   // Shared business logic and assets
 │   ├── assets/            // Images, fonts, and other static assets
-│   ├── components/        // Reusable UI components (e.g., generic Button, Card)
-│   ├── hooks/             // Custom hooks (e.g., useAuth, useFetchData)
-│   ├── lib/               // Firebase configuration, initialization, and helper functions
-│   ├── styles/            // Global styles and NativeWind configuration
-│   ├── types/             // TypeScript type declarations and interfaces
+│   ├── components/        // Reusable UI components
+│   ├── hooks/             // Custom hooks
+│   ├── lib/               // Firebase configuration and helpers
+│   ├── styles/            // Global styles and NativeWind config
+│   ├── types/             // TypeScript type declarations
 │   └── utils/             // Utility functions and helpers
-├── tests/                 // Unit and integration tests, mirroring the src structure
+├── tests/                 // Unit and integration tests
 ├── docs/                  // Documentation and guidelines
 ├── .eslintrc.js           // ESLint configuration
 ├── tsconfig.json          // TypeScript configuration
@@ -55,6 +57,35 @@ This structure leverages the new Expo Router conventions by using the `app/` dir
 - **Consistent Naming:**  
   Make filenames clear and descriptive of their purpose.
 
+### Expo Router Naming Conventions
+
+Follow these naming patterns for the `app/` directory:
+
+1. **Group Routes `(name)`**
+
+   - Use parentheses to group related routes
+   - Example: `(auth)` for authentication screens
+   - Example: `(app)` for main application screens
+   - Don't affect the URL/navigation path
+   - Perfect for feature grouping and layouts
+
+2. **Dynamic Routes `[name]`**
+
+   - Use square brackets for dynamic parameters
+   - Example: `[id]` for dynamic user or post pages
+   - Maps to navigation params
+
+3. **Regular Routes**
+
+   - Use standard naming for direct routes
+   - Example: `settings.tsx` for settings screen
+   - Maps directly to the navigation path
+
+4. **Layout Files**
+   - Use `_layout.tsx` for route group layouts
+   - Can be placed in any route directory
+   - Controls navigation options and screen layouts
+
 ---
 
 ## 2. File Size & Modularization
@@ -62,7 +93,7 @@ This structure leverages the new Expo Router conventions by using the `app/` dir
 - **File Size Limit:**  
   Aim to keep files ≤ 250 lines. If a file grows too large, extract parts of the code into smaller, focused modules or utility files.
 
-- **Modularization:**  
+- **Modularization:**
   - Group related functions, components, or hooks in a dedicated module.
   - Avoid "god" components or utilities; extract logic into custom hooks or helper functions.
   - For complex features, consider creating a dedicated feature folder within `src/screens` to group screens, hidden components, and related hooks.
@@ -76,6 +107,7 @@ This structure leverages the new Expo Router conventions by using the `app/` dir
 
 - **Function Documentation:**  
   Use TSDoc-style comments for all functions and hooks. For example:
+
   ```ts
   /**
    * Fetches a user by ID from Firestore.
@@ -94,7 +126,8 @@ This structure leverages the new Expo Router conventions by using the `app/` dir
 
 ## 4. Organization Patterns
 
-- **Screens vs. Components:**  
+- **Screens vs. Components:**
+
   - **Screens:** High-level view components used in navigation. Place them in `src/screens` organized by feature (e.g., Auth, Feed, Groups, Profile).
   - **Reusable Components:** Generic UI elements that can be shared across screens should reside in `src/components`.
 

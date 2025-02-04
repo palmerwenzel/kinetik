@@ -7,7 +7,9 @@ This document outlines the core technologies selected for Kinetik, along with im
 ## 1. Core Technologies
 
 ### Programming Language & Framework
+
 **TypeScript + React Native with Expo**
+
 - Strong typing prevents runtime errors
 - Cross-platform mobile development using Expo for streamlined development and faster iterations
 - Hot reloading and over-the-air updates via Expo Go enable direct testing on physical devices
@@ -15,7 +17,9 @@ This document outlines the core technologies selected for Kinetik, along with im
 - First-class TypeScript support in React Native
 
 ### State Management
+
 **React Query + Context**
+
 - React Query for server state management
   - Built-in caching and invalidation
   - Real-time updates support
@@ -27,7 +31,9 @@ This document outlines the core technologies selected for Kinetik, along with im
   - Simpler than Redux for local state
 
 ### Navigation
+
 **React Navigation**
+
 - Industry standard for React Native
 - Deep linking support
 - Type-safe navigation
@@ -39,7 +45,9 @@ This document outlines the core technologies selected for Kinetik, along with im
 ## 2. UI & Styling
 
 ### Component Library
+
 **NativeBase**
+
 - Comprehensive theming system
 - Custom variant support
 - Compound components
@@ -47,13 +55,16 @@ This document outlines the core technologies selected for Kinetik, along with im
 - TypeScript integration
 
 ### Styling Solution
+
 **NativeWind (Tailwind for React Native)**
+
 - Utility-first CSS
 - Works alongside NativeBase
 - Familiar Tailwind syntax
 - Performance optimized for React Native
 
 ### Theme Configuration
+
 ```typescript
 // Example theme structure
 {
@@ -81,7 +92,9 @@ This document outlines the core technologies selected for Kinetik, along with im
 ## 3. Backend & Infrastructure
 
 ### Backend Platform
+
 **Firebase**
+
 - Authentication
   - Social logins
   - Email/password
@@ -102,6 +115,7 @@ This document outlines the core technologies selected for Kinetik, along with im
   - Real-time updates
 
 ### Implementation Notes
+
 - Use Firebase Admin SDK in Cloud Functions
 - Implement security rules in Firestore
 - Set up proper indices for queries
@@ -112,13 +126,16 @@ This document outlines the core technologies selected for Kinetik, along with im
 ## 4. Testing & Quality
 
 ### Testing Framework
+
 **Jest + React Native Testing Library**
+
 - Component testing
 - Integration testing
 - Snapshot testing
 - Mock system APIs
 
 ### Testing Strategy
+
 ```typescript
 // Example test structure
 describe('Component', () => {
@@ -140,7 +157,9 @@ describe('Component', () => {
 ## 5. CI/CD
 
 ### Platform
+
 **GitHub Actions**
+
 - Automated testing
 - Lint checking
 - Type checking
@@ -148,6 +167,7 @@ describe('Component', () => {
 - Deployment pipelines
 
 ### Workflow Example
+
 ```yaml
 # Example workflow structure
 name: CI
@@ -170,18 +190,21 @@ jobs:
 ## 6. Development Workflow
 
 ### Environment Setup
+
 1. Install Node.js
 2. Configure React Native development environment
 3. Set up Firebase project
 4. Configure GitHub repository
 
 ### Local Development
+
 1. Use TypeScript strict mode
 2. Implement ESLint rules
 3. Use Prettier for formatting
 4. Follow component composition patterns
 
 ### Deployment Pipeline
+
 1. Development → Staging → Production
 2. Feature branch previews
 3. Automated testing gates
@@ -192,16 +215,19 @@ jobs:
 ## Stack Benefits
 
 1. **Modern Mobile Development**
+
    - Cross-platform with React Native
    - Type-safe with TypeScript
    - Component-driven UI
 
 2. **Scalable Architecture**
+
    - Firebase's managed services
    - Real-time capabilities
    - Offline support
 
 3. **Developer Experience**
+
    - Familiar tools (React, TypeScript)
    - Strong IDE support
    - Automated workflows
@@ -209,4 +235,4 @@ jobs:
 4. **Testing & Quality**
    - Comprehensive testing setup
    - Automated CI/CD
-   - Code quality tools 
+   - Code quality tools

@@ -7,6 +7,7 @@ Welcome to the TonIQ Next.js project! This index document is designed to help an
 ## 1. Project Overview
 
 We’re building a modern healthcare CRM application using:
+
 - Next.js (App Router, TypeScript)
 - React (with Server & Client Components)
 - Tailwind CSS / Shadcn UI / Radix UI
@@ -20,22 +21,26 @@ Our project is organized into multiple phases (setup, authentication, case manag
 
 These files outline the sequential tasks needed to build TonIQ from the ground up:
 
-1. @phase-0.md (Project Initialization & Environment Setup)  
+1. @phase-0.md (Project Initialization & Environment Setup)
+
    - Covers environment setup, Next.js configuration, Tailwind + Shadcn UI init, Supabase onboarding, and basic theming tokens.
 
-2. @phase-1.md (Authentication & RBAC)  
+2. @phase-1.md (Authentication & RBAC)
+
    - Enables Supabase Auth, user roles (Patient, Staff, Admin), and checks for basic role-based permissions.
 
-3. @phase-2.md (Database Schema & Case Management)  
-   - Introduces core case or ticket functionality.  
+3. @phase-2.md (Database Schema & Case Management)
+
+   - Introduces core case or ticket functionality.
    - Covers CRUD operations, patient self-service, staff queue management, etc.
 
-4. @phase-3.md (Staff & Patient Dashboards)  
-   - Builds advanced UI dashboards for different roles.  
+4. @phase-3.md (Staff & Patient Dashboards)
+
+   - Builds advanced UI dashboards for different roles.
    - May include partial or placeholder AI triage integration.
 
-5. @phase-4.md (Administrator Tools & AI Integration)  
-   - Adds system management features for Admins (routing rules, user management) and deeper AI-based triage or assistance.  
+5. @phase-4.md (Administrator Tools & AI Integration)
+   - Adds system management features for Admins (routing rules, user management) and deeper AI-based triage or assistance.
    - Ensures final polish, testing, and documentation.
 
 ---
@@ -44,15 +49,17 @@ These files outline the sequential tasks needed to build TonIQ from the ground u
 
 We use specialized workflows to manage each domain (UI, backend, tests, and git). These files help break tasks down and track progress:
 
-1. @frontend-workflow.md  
-   - Step-by-step UI development process.  
+1. @frontend-workflow.md
+
+   - Step-by-step UI development process.
    - References UI rules, ensures proper design, accessibility, and compliance.
 
 2. @backend-workflow.md
-   - Focuses on backend tasks, including route handlers, Supabase integration, and validations.  
+
+   - Focuses on backend tasks, including route handlers, Supabase integration, and validations.
    - Ensures real-time features and tests are implemented consistently.
 
-3. [docs/workflow-templates/](./workflow-templates) (Backend/UI templates)  
+3. [docs/workflow-templates/](./workflow-templates) (Backend/UI templates)
    - Blank versions of the checklists that can be copied and customized for each new feature or development phase.
 
 ---
@@ -62,21 +69,26 @@ We use specialized workflows to manage each domain (UI, backend, tests, and git)
 We have a variety of “rules” documents spanning code organization, theming, UI principles, and testing. They ensure consistency as the project grows:
 
 1. @agent-rules.md
+
    - Defines the AI assistant’s operational rules, including how to classify tasks (new feature, bugfix, etc.) and update the master workflow.
 
 2. @codebase-organization-rules.md
-   - Explains organization conventions, TDD structure, Next.js App Router usage.  
+
+   - Explains organization conventions, TDD structure, Next.js App Router usage.
    - Provides an example directory layout and line limit guidelines.
 
 3. @tech-stack-rules.md
+
    - Describes best practices for Next.js, Supabase, caching, state management, and more.
 
 4. @test-rules.md
-   - Outlines the testing strategy: unit, integration, E2E.  
+
+   - Outlines the testing strategy: unit, integration, E2E.
    - Emphasizes TDD workflow, coverage, and mocking.
 
 5. @theme-rules.md
-   - Covers color system, dark mode, glassmorphic design elements, and CSS variables.  
+
+   - Covers color system, dark mode, glassmorphic design elements, and CSS variables.
    - Emphasizes performance-based theming.
 
 6. @ui-rules.md
@@ -89,10 +101,12 @@ We have a variety of “rules” documents spanning code organization, theming, 
 These documents provide deeper context about our tech choices, planned user flows, and example tests:
 
 1. @tech-stack.md
+
    - Breakdown of each major technology used, official references, and recommended best practices.
 
 2. @test-examples.md
-   - Contains sample tests (unit, component, E2E) for guidance.  
+
+   - Contains sample tests (unit, component, E2E) for guidance.
    - Shows integration with React Testing Library, Vitest/Jest, and Playwright.
 
 3. @user-flow.md
@@ -111,11 +125,11 @@ These documents provide deeper context about our tech choices, planned user flow
 
 ## 7. Contributing Flow in a Nutshell
 
-1. Identify your task → Check the relevant “Phase” or “Workflow” checklist.  
-2. Review any associated “Rules” or “Project Info” docs.  
-3. Implement code → Ensure TDD and best practices.  
-4. Update checklists to mark progress.  
-5. Follow the Git Workflow for commits and pull requests.  
+1. Identify your task → Check the relevant “Phase” or “Workflow” checklist.
+2. Review any associated “Rules” or “Project Info” docs.
+3. Implement code → Ensure TDD and best practices.
+4. Update checklists to mark progress.
+5. Follow the Git Workflow for commits and pull requests.
 6. Celebrate your contribution!
 
 ---

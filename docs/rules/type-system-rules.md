@@ -7,6 +7,7 @@ This document outlines our approach to type management in the Kinetik project. O
 ## 1. Type Hierarchy
 
 ### 1.1. Raw Firestore Types (Db Types)
+
 - **Purpose:** Manually define the expected structure of Firestore documents.
 - **Usage:** Use these types only in Firebase API wrappers.
 - **Naming:** Prefix with `Db` (e.g., `DbUser`, `DbGroup`).
@@ -23,6 +24,7 @@ This document outlines our approach to type management in the Kinetik project. O
   ```
 
 ### 1.2. Domain Types
+
 - **Purpose:** Define application-specific types that refine raw data with business logic, computed values, and UI-friendly formats.
 - **Usage:** Import these types throughout the application.
 - **Naming:** Use plain names (e.g., `User`, `Group`).
@@ -30,15 +32,16 @@ This document outlines our approach to type management in the Kinetik project. O
 
   ```typescript
   // File: src/types/domain/user.ts
-  import type { DbUser } from '../firebase/firestoreTypes';
+  import type { DbUser } from "../firebase/firestoreTypes";
 
   export interface User extends DbUser {
     createdAt: Date; // Converted from `created_at`
-    role: 'admin' | 'member'; // Refined from a generic string
+    role: "admin" | "member"; // Refined from a generic string
   }
   ```
 
 ### 1.3. Validation Schemas
+
 - **Purpose:** Validate and transform data at runtime using Zod.
 - **Usage:** Validate incoming data from Firestore or user input in forms, ensuring that it conforms to the expected domain type.
 - **Naming:** Suffix with `Schema` (e.g., `userSchema`).
@@ -46,21 +49,24 @@ This document outlines our approach to type management in the Kinetik project. O
 
   ```typescript
   // File: src/lib/validations/userSchema.ts
-  import { z } from 'zod';
-  import type { User } from '../../types/domain/user';
+  import { z } from "zod";
+  import type { User } from "../../types/domain/user";
 
-  export const userSchema = z.object({
-    uid: z.string(),
-    email: z.string().email(),
-    created_at: z.string(),
-  }).transform((raw) => ({
-    ...raw,
-    createdAt: new Date(raw.created_at),
-    role: 'member', // Default value; adjust as needed
-  })).refine((data): data is User => {
-    // Custom validation logic if necessary.
-    return true;
-  });
+  export const userSchema = z
+    .object({
+      uid: z.string(),
+      email: z.string().email(),
+      created_at: z.string(),
+    })
+    .transform(raw => ({
+      ...raw,
+      createdAt: new Date(raw.created_at),
+      role: "member", // Default value; adjust as needed
+    }))
+    .refine((data): data is User => {
+      // Custom validation logic if necessary.
+      return true;
+    });
   ```
 
 ---
@@ -82,10 +88,10 @@ Validation Schemas (Runtime Data Checks via Zod)
 
 ## 3. Naming and Structure Conventions
 
-- **Firestore vs. Domain:**  
+- **Firestore vs. Domain:**
   - Database/Firestore document fields use **snake_case**.
   - Domain types and UI code use **camelCase**.
-- **Folder Organization:**  
+- **Folder Organization:**
   - **Raw Types:** Located in `src/types/firebase/`
   - **Domain Types:** Located in `src/types/domain/`
   - **Validation Schemas:** Located in `src/lib/validations/`
