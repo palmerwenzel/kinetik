@@ -8,36 +8,38 @@ This document outlines the recommended folder layout, file naming conventions, m
 
 ### Directory Layout
 
-Organize the codebase by feature and domain. Below is a suggested directory structure for a React Native project:
+Organize the codebase by feature and domain. Below is a recommended directory structure for our modern Expo project:
 
 ```
 my-app/
-├── src/
-│   ├── assets/              // Images, fonts, and other static assets
-│   ├── components/          // Reusable UI components (e.g., Button.tsx, Card.tsx)
-│   ├── hooks/               // Custom hooks (e.g., useAuth.ts, useFetchData.ts)
-│   ├── lib/
-│   │   └── firebase/        // Firebase configuration, initialization, and helper functions
-│   ├── navigation/          // React Navigation configuration and navigators
-│   ├── screens/             // Screen components, organized by feature:
-│   │   ├── Auth/
-│   │   │   ├── LoginScreen.tsx
-│   │   │   └── SignupScreen.tsx
-│   │   ├── Feed/
-│   │   │   └── FeedScreen.tsx
-│   │   ├── Groups/
-│   │   │   └── GroupsScreen.tsx
-│   │   └── Profile/
-│   │       └── ProfileScreen.tsx
-│   ├── styles/              // Global styles and NativeWind configuration
-│   ├── types/               // TypeScript type declarations and interfaces
-│   └── utils/               // Utility functions and helpers
-├── tests/                   // Unit and integration tests, mirroring the src structure
-├── docs/                    // Documentation and guidelines
-├── .eslintrc.js             // ESLint configuration
-├── tsconfig.json            // TypeScript configuration
+├── app/                   // File-based routing with Expo Router
+│   ├── _layout.tsx        // Global layout and route configuration
+│   ├── index.tsx          // Home screen route
+│   ├── Auth/              // Authentication routes
+│   │   ├── LoginScreen.tsx
+│   │   └── SignupScreen.tsx
+│   ├── Feed/              // Feed routes
+│   │   └── FeedScreen.tsx
+│   ├── Groups/            // Groups routes
+│   │   └── GroupsScreen.tsx
+│   └── Profile/           // Profile routes
+│       └── ProfileScreen.tsx
+├── src/                   // Shared business logic and assets
+│   ├── assets/            // Images, fonts, and other static assets
+│   ├── components/        // Reusable UI components (e.g., generic Button, Card)
+│   ├── hooks/             // Custom hooks (e.g., useAuth, useFetchData)
+│   ├── lib/               // Firebase configuration, initialization, and helper functions
+│   ├── styles/            // Global styles and NativeWind configuration
+│   ├── types/             // TypeScript type declarations and interfaces
+│   └── utils/             // Utility functions and helpers
+├── tests/                 // Unit and integration tests, mirroring the src structure
+├── docs/                  // Documentation and guidelines
+├── .eslintrc.js           // ESLint configuration
+├── tsconfig.json          // TypeScript configuration
 └── package.json
 ```
+
+This structure leverages the new Expo Router conventions by using the `app/` directory for all routes and screen components, while keeping shared logic, reusable components, and assets in a separate `src/` directory. This approach helps in maintaining a clear separation between view definitions and business logic.
 
 ### File Naming Conventions
 
@@ -62,7 +64,7 @@ my-app/
 
 - **Modularization:**  
   - Group related functions, components, or hooks in a dedicated module.
-  - Avoid “god” components or utilities; extract logic into custom hooks or helper functions.
+  - Avoid "god" components or utilities; extract logic into custom hooks or helper functions.
   - For complex features, consider creating a dedicated feature folder within `src/screens` to group screens, hidden components, and related hooks.
 
 ---

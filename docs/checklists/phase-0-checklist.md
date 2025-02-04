@@ -14,7 +14,7 @@ This checklist covers all the initial setup tasks that need to be completed befo
 ---
 
 ## 2. Environment & Dependency Installation
-- [ ] **Install Project Dependencies:**  
+- [x] **Install Project Dependencies:**  
   - Run `npm install` to install all dependencies listed in `package.json`.
 - [x] **Set Up Project Configuration Files:**  
   - Ensure that `.env` files for development (and testing) are created and populated with necessary environment variables (e.g., Firebase configuration, API keys, etc.).
@@ -24,16 +24,16 @@ This checklist covers all the initial setup tasks that need to be completed befo
 ---
 
 ## 3. Development Tooling Configuration
-- [ ] **Code Quality & Formatting:**  
+- [x] **Code Quality & Formatting:**  
   - Configure ESLint for TypeScript and React Native by ensuring `.eslintrc.js` is in place.
   - Set up Prettier with a configuration file (`.prettierrc`) to enforce code style.
-- [ ] **TypeScript Setup:**  
+- [x] **TypeScript Setup:**  
   - Confirm that `tsconfig.json` exists and is configured for strict mode.
 - [ ] **Setup NativeWind & Tailwind Config:**  
   - Ensure that the NativeWind configuration for Tailwind styling in React Native is properly configured.
 - [ ] **Local Firebase Setup:**  
   - Initialize Firebase in the project (under `src/lib/firebase`) and verify connectivity to the Firebase Emulator for testing.
-- [ ] **Expo Setup:**  
+- [x] **Expo Setup:**  
   - Run `npx expo start` to launch the development server and use the Expo Go app to test directly on your physical device.
 
 ---
@@ -47,7 +47,7 @@ This checklist covers all the initial setup tasks that need to be completed befo
 ---
 
 ## 5. Verification & Documentation
-- [ ] **Environment Verification:**  
+- [x] **Environment Verification:**  
   - Run the project locally to confirm that the bundler starts without errors.
   - Verify that environment variables and configuration files are correctly loaded.
 - [ ] **Update Documentation:**  
