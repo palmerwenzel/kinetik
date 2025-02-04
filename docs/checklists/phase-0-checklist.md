@@ -5,9 +5,8 @@ This checklist covers all the initial setup tasks that need to be completed befo
 ---
 
 ## 1. Pre-Setup Prerequisites
-- [x] **Verify Node.js & Yarn:**  
+- [x] **Verify Node.js:**  
   - Ensure that Node.js (LTS recommended) is installed.
-  - Install Yarn globally if not already installed.
 - [x] **Version Control:**  
   - Ensure Git is installed and configured.
   - Clone the project repository from the remote source.
@@ -16,7 +15,7 @@ This checklist covers all the initial setup tasks that need to be completed befo
 
 ## 2. Environment & Dependency Installation
 - [ ] **Install Project Dependencies:**  
-  - Run `yarn install` (or `npm install`) to install all dependencies listed in `package.json`.
+  - Run `npm install` to install all dependencies listed in `package.json`.
 - [x] **Set Up Project Configuration Files:**  
   - Ensure that `.env` files for development (and testing) are created and populated with necessary environment variables (e.g., Firebase configuration, API keys, etc.).
 - [x] **Create a Base Folder Structure:**  
@@ -35,18 +34,15 @@ This checklist covers all the initial setup tasks that need to be completed befo
 - [ ] **Local Firebase Setup:**  
   - Initialize Firebase in the project (under `src/lib/firebase`) and verify connectivity to the Firebase Emulator for testing.
 - [ ] **Expo Setup:**  
-  - Install Expo CLI globally using `npm install -g expo-cli` (or `yarn global add expo-cli`).
-  - Verify that Expo configuration exists (check for `app.json` or `app.config.js`).
-  - Run `expo start` to launch the development server and use the Expo Go app to test directly on your physical device.
+  - Run `npx expo start` to launch the development server and use the Expo Go app to test directly on your physical device.
 
 ---
 
 ## 4. Continuous Integration & Version Control
 - [ ] **CI/CD Pipeline Setup:**  
   - Ensure that the automated CI/CD configuration (e.g., GitHub Actions) is in place and passes initial checks.
-- [ ] **Initial Commit & Branching Strategy:**  
+- [x] **Initial Commit**  
   - Make an initial commit with the base project setup.
-  - Establish a branching strategy (e.g., feature branches from `develop`).
 
 ---
 

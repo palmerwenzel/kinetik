@@ -158,11 +158,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: yarn install
+        run: npm install
       - name: Run tests
-        run: yarn test
+        run: npm test
       - name: Type check
-        run: yarn tsc
+        run: npm run tsc
 ```
 
 ---
@@ -170,7 +170,7 @@ jobs:
 ## 6. Development Workflow
 
 ### Environment Setup
-1. Install Node.js and yarn
+1. Install Node.js
 2. Configure React Native development environment
 3. Set up Firebase project
 4. Configure GitHub repository

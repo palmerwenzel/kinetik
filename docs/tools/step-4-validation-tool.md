@@ -30,7 +30,7 @@
   - Include snapshot tests for visual components where appropriate.
   
 - **Execute Tests:**
-  - Run `yarn test` (or `npm test`) to ensure all tests pass.
+  - Run `npm test` to ensure all tests pass.
   - Confirm that edge cases, error states, and data transformation logic are properly covered.
   
 - **Document Testing:**
