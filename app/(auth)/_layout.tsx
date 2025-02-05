@@ -6,6 +6,7 @@ export default function AuthLayout() {
       screenOptions={{
         headerShown: false,
         animation: "fade",
+        animationDuration: 200, // Faster fade for smoother transition with our custom animations
       }}
     >
       <Stack.Screen name="login" />
