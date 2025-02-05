@@ -13,7 +13,7 @@ Current Task: [Task Description]
 
 ## Understanding Phase Findings
 
-[Document findings from step-1-understanding.md here]
+[Document findings from step-1-understanding-tool.md here]
 
 ### Documentation Review Results
 
@@ -30,7 +30,7 @@ Current Task: [Task Description]
 
 ## Planning Phase Results
 
-[Document findings from step-2-planning.md here]
+[Document findings from step-2-planning-tool.md here]
 
 ### Architecture Plan
 

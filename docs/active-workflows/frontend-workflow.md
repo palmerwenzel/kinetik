@@ -2,77 +2,81 @@
 
 ## Project State
 
-Project Phase: Phase 1 - Authentication & Onboarding
-Current Task: Implement Firebase Authentication
+Project Phase: [Phase Number/Name]
+Current Task: [Task Description]
 
 ## Break the task into manageable component tasks
 
-- [x] Set up authentication routes using Expo Router
-- [x] Create form validation with react-hook-form and zod
-- [x] Set up basic component structure for Login/Signup
-- [x] Configure auto-formatting
-- [x] Implement Firebase email authentication
-- [ ] Add Google Sign-In
-- [x] Handle authentication errors
-- [x] Add loading states
-- [x] Test authentication flow
+- Component Task
+- Component Task
+- etc.
 
 ## Understanding Phase Findings
 
+[Document findings from step-1-understanding-tool.md here]
+
 ### Documentation Review Results
 
-- Relevant Guidelines: Firebase Auth, Expo Router conventions
-- Related Components: Auth screens, AuthContext
-- Similar Features: None yet (initial auth implementation)
-- Integration Points: Firebase Auth, Google Sign-In SDK
+- Relevant Guidelines:
+- Related Components:
+- Similar Features:
+- Integration Points:
 
 ### Key Requirements
 
-- Functional: Email and Google authentication
-- Technical: Secure token storage, error handling
-- Design: Loading states, error messages
+- Functional:
+- Technical:
+- Design:
+
+## Planning Phase Results
+
+[Document findings from step-2-planning-tool.md here]
+
+### Architecture Plan
+
+- Component Structure:
+- State Management:
+- Data Flow:
 
 ### Technical Approach
 
-- Firebase Auth: Email/password and Google providers
-- Error Handling: Form-level and auth-level errors
-- State Management: AuthContext with loading states
+- Styling Strategy:
+- Integration Points:
+- Key Dependencies:
 
 ## Implementation Checklist
 
 ### Setup
 
-- [x] Dependencies installed
-- [x] Auth routes structure created
-- [x] Form validation setup
-- [x] Firebase Auth configuration
+- [ ] Dependencies verified
+- [ ] File structure created
+- [ ] Initial boilerplate setup
 
 ### Development Progress
 
-- [x] Auth context created
-- [x] Form components
-- [x] Navigation structure
-- [x] Firebase integration
-- [x] Loading states
-- [x] Error handling
-- [ ] Google Sign-In
+- [ ] Component structure
+- [ ] Base functionality
+- [ ] Desktop layout
+- [ ] Loading states
+- [ ] Responsive design
+- [ ] Documentation
 
 ### Integration
 
-- [x] Route protection
-- [x] Firebase Auth
-- [x] Error handling
-- [x] Loading states
+- [ ] API integration
+- [ ] State management
+- [ ] Error handling
+
+## Checkpoints
+
+- [ ] Understanding complete
+- [ ] Planning approved
+- [ ] Setup verified
+- [ ] Implementation reviewed
+- [ ] Integration verified
+- [ ] Final review passed
 
 ## Notes & Decisions
 
-- Decision 1: Using Firebase Auth for authentication
-- Decision 2: Handling errors at form and auth levels
-- Decision 3: Adding loading states for better UX
-- Decision 4: Development environment uses Firebase emulators for testing
-
-### Next Steps
-
-1. Test authentication flow thoroughly ✅
-2. Add Google Sign-In
-3. Polish UI/UX if needed
+- Decision 1: [Description]
+- Decision 2: [Description]
