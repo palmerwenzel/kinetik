@@ -10,12 +10,6 @@ module.exports = {
         "primary-light": "#FF8533",
         "primary-dark": "#CC5200",
 
-        // Background and surface colors
-        background: "#F0F0F3", // Light gray for neumorphic effect
-        "background-dark": "#1A1A1A",
-        surface: "#F0F0F3", // Matching background for consistent depth
-        "surface-dark": "#2A2A2A",
-
         // Text colors with proper contrast
         text: "#1A1A1A",
         "text-secondary": "#666666",
@@ -23,6 +17,14 @@ module.exports = {
         "text-dark": "#FFFFFF",
         "text-dark-secondary": "#CCCCCC",
         "text-dark-tertiary": "#999999",
+        "text-primary": "#FF6600", // Add explicit text color for primary
+        "text-primary-light": "#FF8533", // And its variants
+
+        // Background and surface colors
+        background: "#F0F0F3", // Light gray for neumorphic effect
+        "background-dark": "#1A1A1A",
+        surface: "#F0F0F3", // Matching background for consistent depth
+        "surface-dark": "#2A2A2A",
 
         // Border colors for subtle definition
         border: "#E5E5E5",

@@ -56,7 +56,7 @@ Current Task: [Task Description]
 
 - [ ] Component structure
 - [ ] Base functionality
-- [ ] Desktop layout
+- [ ] Mobile layout
 - [ ] Loading states
 - [ ] Responsive design
 - [ ] Documentation

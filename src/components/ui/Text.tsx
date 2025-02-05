@@ -19,13 +19,17 @@ const textVariants = cva(
         // Even less prominent text
         subtle: "text-text-tertiary dark:text-text-dark-tertiary",
         // Accent colored text
-        accent: "text-primary dark:text-primary-light",
+        accent: "text-text-primary dark:text-text-primary-light text-center",
+        // On Surface text
+        onSurface: "text-white dark:text-text-dark-secondary text-center",
         // Error messages
         error: "text-error",
         // Button text variants - matching signup page styling
+        "button-primary":
+          "text-text-primary dark:text-text-primary-light text-center font-semibold text-lg",
         "button-accent": "text-white text-center font-semibold text-lg",
         "button-neutral": "text-text dark:text-text-dark text-center font-semibold text-lg",
-        "button-link": "text-primary dark:text-primary-light font-semibold",
+        "button-link": "text-text-primary dark:text-text-primary-light font-semibold",
       },
       size: {
         xs: "text-xs",

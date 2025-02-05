@@ -81,7 +81,7 @@ export default function SignupScreen() {
       if (userCredential.user) {
         await createUserProfile(userCredential.user.uid, data.email);
       }
-      router.replace("/(app)");
+      router.replace("/(auth)/profileSetup");
     } catch (error) {
       console.error("Signup error:", error);
       if (error instanceof FirebaseError) {
@@ -102,7 +102,7 @@ export default function SignupScreen() {
       if (userCredential.user) {
         await createUserProfile(userCredential.user.uid, userCredential.user.email || "");
       }
-      router.replace("/(app)");
+      router.replace("/(auth)/profileSetup");
     } catch (error) {
       console.error("Google sign in error:", error);
       if (error instanceof FirebaseError) {
