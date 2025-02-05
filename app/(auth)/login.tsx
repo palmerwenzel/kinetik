@@ -1,10 +1,15 @@
-import { View, Text, TouchableOpacity, TextInput, ActivityIndicator } from "react-native";
+import React from "react";
+import { View } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, router } from "expo-router";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { FirebaseError } from "firebase/app";
+import { Container } from "@/components/ui/Container";
+import { Text } from "@/components/ui/Text";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 // Define form validation schema
 const loginSchema = z.object({
@@ -85,94 +90,93 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 justify-center p-4 bg-white">
-      <Text className="text-2xl font-bold mb-8 text-center">Welcome Back</Text>
+    <Container variant="flat-surface" className="flex-1 justify-center px-8 py-12">
+      <Text size="3xl" weight="bold" className="text-center mb-8">
+        Welcome Back
+      </Text>
 
       {errors.root && (
-        <Text className="text-red-500 text-sm mb-4 text-center">{errors.root.message}</Text>
+        <>
+          <Text intent="error" size="sm" className="text-center mb-4">
+            {errors.root.message}
+          </Text>
+        </>
       )}
 
-      <Controller
-        control={control}
-        name="email"
-        render={({ field: { onChange, value } }) => (
-          <View className="mb-4">
-            <Text className="text-sm font-medium mb-1">Email</Text>
-            <TextInput
-              className="p-3 border rounded-lg"
-              placeholder="Enter your email"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              spellCheck={false}
-              autoComplete="email"
-              value={value}
-              onChangeText={onChange}
-              editable={!isSubmitting}
-            />
-            {errors.email && (
-              <Text className="text-red-500 text-sm mt-1">{errors.email.message}</Text>
-            )}
-          </View>
-        )}
-      />
+      <View className="mb-6">
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, value } }) => (
+            <View className="mb-4">
+              <Input
+                variant="neu-surface"
+                label="Email"
+                placeholder="Enter your email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                spellCheck={false}
+                autoComplete="email"
+                value={value}
+                onChangeText={onChange}
+                isDisabled={isSubmitting}
+                error={errors.email?.message}
+              />
+            </View>
+          )}
+        />
 
-      <Controller
-        control={control}
-        name="password"
-        render={({ field: { onChange, value } }) => (
-          <View className="mb-6">
-            <Text className="text-sm font-medium mb-1">Password</Text>
-            <TextInput
-              className="p-3 border rounded-lg"
-              placeholder="Enter your password"
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="password"
-              value={value}
-              onChangeText={onChange}
-              editable={!isSubmitting}
-            />
-            {errors.password && (
-              <Text className="text-red-500 text-sm mt-1">{errors.password.message}</Text>
-            )}
-          </View>
-        )}
-      />
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { onChange, value } }) => (
+            <View className="mb-4">
+              <Input
+                variant="neu-surface"
+                label="Password"
+                placeholder="Enter your password"
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoComplete="password"
+                value={value}
+                onChangeText={onChange}
+                isDisabled={isSubmitting}
+                error={errors.password?.message}
+              />
+            </View>
+          )}
+        />
+      </View>
 
-      <TouchableOpacity
-        className="bg-orange-500 p-4 rounded-lg mb-4"
-        onPress={handleSubmit(onSubmit)}
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-white text-center font-semibold">Log In</Text>
-        )}
-      </TouchableOpacity>
+      <View className="mb-8">
+        <Button
+          variant="neu-accent"
+          onPress={handleSubmit(onSubmit)}
+          isDisabled={isSubmitting}
+          isLoading={isSubmitting}
+          size="lg"
+          textComponent={<Text intent="button-accent">Log In</Text>}
+          className="mb-4"
+        />
 
-      <TouchableOpacity
-        className="bg-blue-500 p-4 rounded-lg mb-4"
-        onPress={handleGoogleSignIn}
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text className="text-white text-center font-semibold">Continue with Google</Text>
-        )}
-      </TouchableOpacity>
+        <Button
+          variant="neu-raised"
+          onPress={handleGoogleSignIn}
+          isDisabled={isSubmitting}
+          isLoading={isSubmitting}
+          size="lg"
+          textComponent={<Text intent="button-neutral">Continue with Google</Text>}
+        />
+      </View>
 
-      <View className="flex-row justify-center">
-        <Text className="text-gray-600">Don't have an account? </Text>
+      <View className="flex-row justify-center items-center space-x-1">
+        <Text intent="muted">Don&apos;t have an account?</Text>
         <Link href="/(auth)/signup" asChild>
-          <TouchableOpacity>
-            <Text className="text-orange-500 font-semibold">Sign Up</Text>
-          </TouchableOpacity>
+          <Button variant="link" textComponent={<Text intent="button-link">Sign Up</Text>} />
         </Link>
       </View>
-    </View>
+    </Container>
   );
 }

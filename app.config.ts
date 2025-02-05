@@ -17,9 +17,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       backgroundColor: "#ffffff",
     },
     assetBundlePatterns: ["**/*"],
+    scheme: "kinetik",
     ios: {
       supportsTablet: true,
       bundleIdentifier: isDevelopment ? "com.kinetik.app.dev" : "com.kinetik.app",
+      usesAppleSignIn: true,
     },
     android: {
       adaptiveIcon: {
@@ -38,6 +40,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       firebaseStorageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
       firebaseMessagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
       firebaseAppId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+      googleAndroidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+      googleIosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+      googleWebClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
       useEmulator: isDevelopment,
       eas: {
         projectId: process.env.EAS_PROJECT_ID,
