@@ -1,18 +1,33 @@
 import { View } from "react-native";
-import { Text } from "@/components/ui/Text";
-import { AnimatedContainer } from "@/components/ui/AnimatedContainer";
+import { VideoFeed } from "../../../src/components/video/VideoFeed";
+
+const DEMO_VIDEOS = [
+  {
+    id: "1",
+    uri: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    creator: "Demo Creator 1",
+  },
+  {
+    id: "2",
+    uri: "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    creator: "Demo Creator 2",
+  },
+  {
+    id: "3",
+    uri: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    creator: "Demo Creator 3",
+  },
+  {
+    id: "4",
+    uri: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    creator: "Demo Creator 4",
+  },
+];
 
 export default function FeedScreen() {
   return (
     <View className="flex-1 bg-black">
-      <AnimatedContainer variant="transparent" className="flex-1 items-center justify-center">
-        <Text size="xl" weight="bold" className="text-white text-center">
-          Video Feed
-        </Text>
-        <Text intent="muted" className="text-center text-white/70">
-          TikTok-style video content coming soon
-        </Text>
-      </AnimatedContainer>
+      <VideoFeed videos={DEMO_VIDEOS} onEndReached={() => console.log("Reached end of feed")} />
     </View>
   );
 }

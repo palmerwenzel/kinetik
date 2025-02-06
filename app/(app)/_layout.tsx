@@ -64,6 +64,18 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
+        name="explore/index"
+        options={{
+          title: "Explore",
+          tabBarIcon: ({ color, size }) => <Ionicons name="compass" size={size} color={color} />,
+          tabBarLabel: ({ color }) => (
+            <Text intent="muted" size="xs" style={{ color }}>
+              Explore
+            </Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="create/index"
         options={{
           title: "Create",

@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import { useProfileSetup } from "@/lib/auth/useProfileSetup";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 function RootLayoutNav() {
   const { isCheckingProfile } = useProfileSetup();
@@ -25,8 +26,10 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <RootLayoutNav />
-    </AuthProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AuthProvider>
+        <RootLayoutNav />
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }

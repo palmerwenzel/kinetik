@@ -3,105 +3,97 @@
 ## Project State
 
 Project Phase: Phase 1.5 - Video Feed MVP
-Current Task: Implement bottom tab navigation with Home, Feed, Create, and Profile tabs
+Current Task: Implement TikTok-style video feed with vertical swipe navigation
 
 ## Break the task into manageable component tasks
 
-- Set up navigation container with Expo Router
-- Create tab bar component with neumorphic design
-- Implement screen components:
-  - Home (daily overview, quick actions)
-  - Feed (TikTok-style video viewing)
-  - Create (video upload)
-  - Profile (user info, activity)
-- Add tab icons and labels
-- Handle navigation state and transitions
+- Set up full-screen video feed container
+- Implement vertical swipe navigation
+- Create video player component with basic controls
+- Add autoplay/pause on swipe functionality
+- Implement loading states and placeholders
 
 ## Understanding Phase Findings
 
 ### Documentation Review Results
 
-- Relevant Guidelines: [@theme-rules.md](../rules/theme-rules.md) for neumorphic design
-- Related Components: Existing AuthContext and profile components
-- Similar Features: None yet (first navigation implementation)
-- Integration Points: Expo Router, existing auth flow
+- Technical Guidelines: Expo AV for video playback, React Native Gesture Handler for swipes
+- Related Components: Existing AnimatedContainer and UI components
+- Similar Features: None yet (first video implementation)
+- Integration Points: Firebase Storage for video content
 
 ### Key Requirements
 
 - Functional:
-  - Bottom tab navigation with 4 main tabs
-  - Home screen with daily overview
-  - Feed screen for video content
-  - Create screen for uploads
-  - Profile screen for user info
-  - Proper navigation state management
-  - Auth-aware routing
+  - Full-screen video playback
+  - Smooth vertical swipe navigation
+  - Autoplay/pause on swipe
+  - Basic video controls
 - Technical:
-  - Use Expo Router for file-based routing
-  - Follow React Navigation best practices
-  - Maintain type safety
+  - Use Expo AV for video playback
+  - Implement efficient view recycling
+  - Handle video buffering states
+  - Manage memory efficiently
 - Design:
-  - Neumorphic style for tab bar
-  - Clear active/inactive states
-  - Smooth transitions
+  - Full-screen immersive experience
+  - Smooth transitions between videos
+  - Loading states and placeholders
+  - Minimal UI overlays
 
 ## Planning Phase Results
 
 ### Architecture Plan
 
 - Component Structure:
-  - \_layout.tsx for root layout
-  - (app)/\_layout.tsx for authenticated layout
-  - (app)/home/index.tsx for Home tab
-  - (app)/feed/index.tsx for Feed tab
-  - (app)/create/index.tsx for Create tab
-  - (app)/profile/index.tsx for Profile tab
+  - VideoFeed container (manages swipe and state)
+  - VideoPlayer component (handles playback)
+  - VideoControls overlay (play/pause, sound)
+  - LoadingPlaceholder component
 - State Management:
-  - Use Expo Router for navigation state
-  - Leverage existing AuthContext
+  - Video playback states
+  - Loading and buffering states
+  - Current video index
 - Data Flow:
-  - Navigation events trigger route changes
-  - Auth state determines available routes
+  - Video URLs from Firebase
+  - Playback events to UI
+  - Gesture events to video control
 
 ### Technical Approach
 
-- Styling Strategy:
-  - NativeWind for layout
-  - Custom neumorphic components for tabs
-- Integration Points:
-  - Auth flow integration
-  - Screen transitions
+- Video Integration:
+  - Expo AV for playback
+  - Firebase Storage for content
+- Performance:
+  - View recycling for memory
+  - Video preloading
+  - State caching
 - Key Dependencies:
-  - expo-router
-  - @react-navigation/bottom-tabs
-  - nativewind
+  - expo-av
+  - react-native-gesture-handler
+  - firebase/storage
 
 ## Implementation Checklist
 
 ### Setup
 
-- [ ] Dependencies verified
-- [ ] File structure created
-- [ ] Initial boilerplate setup
+- [ ] Install required dependencies
+- [ ] Set up basic component structure
+- [ ] Create video utilities
 
 ### Development Progress
 
-- [ ] Navigation container setup
-- [ ] Tab bar component
-- [ ] Screen implementations:
-  - [ ] Home screen
-  - [ ] Feed screen
-  - [ ] Create screen
-  - [ ] Profile screen
-- [ ] Auth integration
-- [ ] Styling and animations
-- [ ] Documentation
+- [ ] Full-screen container
+- [ ] Video player component
+- [ ] Swipe navigation
+- [ ] Autoplay behavior
+- [ ] Loading states
+- [ ] Basic controls
 
 ### Integration
 
-- [ ] Route testing
-- [ ] Auth state handling
-- [ ] Navigation transitions
+- [ ] Video loading
+- [ ] Gesture handling
+- [ ] State management
 
 ## Checkpoints
 
@@ -114,8 +106,7 @@ Current Task: Implement bottom tab navigation with Home, Feed, Create, and Profi
 
 ## Notes & Decisions
 
-- Using file-based routing with Expo Router for better organization
-- Implementing custom tab bar for neumorphic design
-- Home screen provides overview while Feed focuses on video content
-- Create tab centered for easy access
-- Profile maintains user context and activity tracking
+- Using Expo AV for reliable video playback
+- Implementing view recycling for performance
+- Starting with basic controls, can enhance later
+- Focus on smooth transitions and loading states
