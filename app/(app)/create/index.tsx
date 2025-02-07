@@ -20,7 +20,7 @@ export default function CreateScreen() {
             </Text>
           </View>
 
-          <View className="flex-col space-y-4">
+          <View className="flex-col gap-y-4">
             <Button
               variant="neu-pressed"
               className="w-48 h-48 rounded-3xl items-center justify-center"
@@ -34,10 +34,10 @@ export default function CreateScreen() {
 
             <Button
               variant="neu-pressed"
-              className="w-48 h-24 rounded-2xl items-center justify-center"
+              className="w-48 h-48 rounded-3xl items-center justify-center"
               onPress={() => router.push("/(create)/library")}
             >
-              <Ionicons name="images" size={32} color="#FF6B00" />
+              <Ionicons name="images" size={48} color="#FF6B00" />
               <Text intent="accent" className="mt-2">
                 Upload Video
               </Text>

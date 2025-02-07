@@ -2,7 +2,7 @@
  * Hook for managing toast notifications
  */
 import React, { createContext, useCallback, useContext, useRef, useState } from "react";
-import { Animated, Dimensions } from "react-native";
+import { Animated } from "react-native";
 import { Toast, ToastType } from "../components/ui/Toast";
 
 interface ToastContextValue {

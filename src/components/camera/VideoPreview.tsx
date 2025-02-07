@@ -4,17 +4,19 @@ import { Video, AVPlaybackStatus, ResizeMode } from "expo-av";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
+import { VideoPublish } from "./VideoPublish";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 interface VideoPreviewProps {
   uri: string;
-  onSave: (uri: string) => void;
   onRetake: () => void;
 }
 
-export function VideoPreview({ uri, onSave, onRetake }: VideoPreviewProps) {
+export function VideoPreview({ uri, onRetake }: VideoPreviewProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showPublish, setShowPublish] = useState(false);
 
   const videoRef = useRef<Video>(null);
 
@@ -56,15 +58,17 @@ export function VideoPreview({ uri, onSave, onRetake }: VideoPreviewProps) {
     setIsLoading(false);
   };
 
-  console.log("[VideoPreview] Current state:", { isPlaying, isLoading, error });
+  if (showPublish) {
+    return <VideoPublish uri={uri} onCancel={() => setShowPublish(false)} />;
+  }
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <View className="flex-1">
         <Video
           ref={videoRef}
           source={{ uri }}
-          resizeMode={ResizeMode.CONTAIN}
+          resizeMode={ResizeMode.COVER}
           shouldPlay={false}
           isLooping
           onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
@@ -75,13 +79,14 @@ export function VideoPreview({ uri, onSave, onRetake }: VideoPreviewProps) {
 
         {isLoading && (
           <View className="absolute inset-0 items-center justify-center">
-            <ActivityIndicator size="large" color="white" />
+            <LoadingSpinner />
           </View>
         )}
 
         {error && (
           <View className="absolute inset-0 items-center justify-center">
-            <Text className="text-red-500">Error loading video: {error}</Text>
+            <Text className="text-error text-center mb-2">Error loading video:</Text>
+            <Text className="text-error text-center">{error}</Text>
           </View>
         )}
 
@@ -99,15 +104,19 @@ export function VideoPreview({ uri, onSave, onRetake }: VideoPreviewProps) {
         </TouchableOpacity>
       </View>
 
-      <View className="p-4 flex-row justify-between items-center bg-black/90">
-        <Button variant="flat-transparent" onPress={onRetake} className="flex-1 mr-2">
-          <Ionicons name="camera-reverse" size={24} color="white" className="mr-2" />
-          <Text>Retake</Text>
+      <View className="p-4 flex-row justify-between items-center bg-background">
+        <Button variant="neu-raised" onPress={onRetake} className="flex-1 mr-2">
+          <View className="flex-row items-center justify-center">
+            <Ionicons name="camera-reverse" size={24} color="white" className="mr-2" />
+            <Text className="text-white ml-2">Retake</Text>
+          </View>
         </Button>
 
-        <Button variant="flat-accent" onPress={() => onSave(uri)} className="flex-1 ml-2">
-          <Ionicons name="checkmark" size={24} color="white" className="mr-2" />
-          <Text>Use Video</Text>
+        <Button variant="neu-accent" onPress={() => setShowPublish(true)} className="flex-1 ml-2">
+          <View className="flex-row items-center justify-center">
+            <Text className="text-white mr-2">Next</Text>
+            <Ionicons name="arrow-forward" size={24} color="white" />
+          </View>
         </Button>
       </View>
     </View>

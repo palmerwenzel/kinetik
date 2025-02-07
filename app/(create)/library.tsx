@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Platform } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
 import { useMediaLibrary } from "@/hooks/useMediaLibrary";
@@ -14,10 +14,16 @@ export default function LibraryScreen() {
     try {
       const result = await pickVideo({
         allowsEditing: true,
-        videoMaxDuration: 60,
+        videoMaxDuration: 5, // 5 seconds max for trimming
       });
 
       if (result?.uri) {
+        // Additional duration check for Android since it doesn't respect videoMaxDuration
+        if (Platform.OS === "android" && result.duration && result.duration > 5) {
+          toast.error("Please trim your video to 5 seconds or less");
+          return;
+        }
+
         router.push({
           pathname: "/(create)/preview",
           params: { videoUri: result.uri },
@@ -33,6 +39,7 @@ export default function LibraryScreen() {
 
   return (
     <View className="flex-1 bg-black items-center justify-center">
+      <Text className="text-white text-center mb-4">Videos must be 5 seconds or less</Text>
       <Button
         variant="flat-accent"
         onPress={handlePickVideo}

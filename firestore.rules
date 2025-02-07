@@ -11,14 +11,18 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    function isGroupMember(groupData) {
-      return isAuthenticated() && (request.auth.uid in groupData.memberRoles);
+    function hasGroupAccess(groupData) {
+      let uid = request.auth.uid;
+      let roles = groupData.memberRoles;
+      return isAuthenticated() && (uid in roles);
     }
 
     function isGroupAdmin(groupData) {
+      let uid = request.auth.uid;
+      let roles = groupData.memberRoles;
       return isAuthenticated() && 
-        (request.auth.uid in groupData.memberRoles) && 
-        groupData.memberRoles[request.auth.uid] == "admin";
+        (uid in roles) && 
+        roles[uid] == "admin";
     }
 
     function isValidUserData() {
@@ -50,6 +54,89 @@ service cloud.firestore {
         'createdBy', 'createdAt', 'updatedAt', 'memberRoles',
         'memberCount', 'isActive'
       ]);
+    }
+
+    // Check if user has access to a video based on group membership
+    function hasVideoAccess(videoData) {
+      // Creator always has access
+      let isCreator = videoData.createdBy == request.auth.uid;
+      
+      // Check if user is member of any groups the video is shared to
+      let groupIds = videoData.groups;
+      let isMemberOfSharedGroup = groupIds.size() == 0 || 
+        exists(/databases/$(database)/documents/groups/$(groupIds[0])) && 
+        request.auth.uid in get(/databases/$(database)/documents/groups/$(groupIds[0])).data.memberRoles;
+      
+      return isAuthenticated() && (isCreator || isMemberOfSharedGroup);
+    }
+
+    // Video validation
+    function isValidVideo() {
+      let video = request.resource.data;
+      return video.keys().hasAll([
+        'caption', 'interests', 'groups', 'videoUrl', 'thumbnailUrl',
+        'duration', 'size', 'createdBy', 'createdAt', 'updatedAt',
+        'likes', 'comments', 'shares', 'isActive', 'isProcessed'
+      ]) &&
+      video.caption is string &&
+      video.caption.size() <= 100 &&
+      video.interests is list &&
+      video.interests.size() > 0 &&
+      video.groups is list &&
+      video.videoUrl is string &&
+      video.thumbnailUrl is string &&
+      video.duration is number &&
+      video.size is number &&
+      video.createdBy == request.auth.uid &&
+      video.likes is number &&
+      video.comments is number &&
+      video.shares is number &&
+      video.isActive is bool &&
+      video.isProcessed is bool;
+    }
+
+    function isValidVideoUpdate() {
+      let video = request.resource.data;
+      let changes = video.diff(resource.data).affectedKeys();
+      return changes.hasAny(['caption', 'interests', 'groups', 'isActive', 'likes', 'comments', 'shares', 'updatedAt']) &&
+        (
+          (isOwner(resource.data.createdBy) &&
+           !changes.hasAny(['videoUrl', 'thumbnailUrl', 'createdBy', 'createdAt'])) ||
+          changes.hasOnly(['likes', 'comments', 'shares', 'updatedAt'])
+        );
+    }
+
+    // Video comment validation
+    function isValidVideoComment() {
+      let comment = request.resource.data;
+      let videoDoc = get(/databases/$(database)/documents/videos/$(comment.videoId));
+      
+      return comment.keys().hasAll([
+        'videoId', 'text', 'createdBy', 'createdAt', 'likes', 'isActive'
+      ]) &&
+      comment.text is string &&
+      comment.text.size() > 0 &&
+      comment.text.size() <= 500 &&
+      comment.createdBy == request.auth.uid &&
+      comment.likes is number &&
+      comment.isActive is bool &&
+      // Ensure parent video exists and user has access
+      videoDoc != null && 
+      hasVideoAccess(videoDoc.data);
+    }
+
+    // Video like validation
+    function isValidVideoLike() {
+      let like = request.resource.data;
+      let videoDoc = get(/databases/$(database)/documents/videos/$(like.videoId));
+      
+      return like.keys().hasAll([
+        'videoId', 'userId', 'createdAt'
+      ]) &&
+      like.userId == request.auth.uid &&
+      // Ensure parent video exists and user has access
+      videoDoc != null && 
+      hasVideoAccess(videoDoc.data);
     }
 
     // User profiles
@@ -93,7 +180,7 @@ service cloud.firestore {
 
       // Members subcollection
       match /members/{memberId} {
-        allow read: if isGroupMember(get(/databases/$(database)/documents/groups/$(groupId)).data);
+        allow read: if hasGroupAccess(get(/databases/$(database)/documents/groups/$(groupId)).data);
         allow create: if 
           isAuthenticated() && 
           // Only admins can add members directly
@@ -104,6 +191,29 @@ service cloud.firestore {
             request.resource.data.uid == request.auth.uid
           );
         allow update, delete: if isGroupAdmin(get(/databases/$(database)/documents/groups/$(groupId)).data);
+      }
+    }
+
+    // Videos collection
+    match /videos/{videoId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidVideo();
+      allow update: if isAuthenticated() && isValidVideoUpdate();
+      allow delete: if isOwner(resource.data.createdBy);
+
+      // Video comments
+      match /comments/{commentId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() && request.resource.data.createdBy == request.auth.uid;
+        allow update: if isOwner(resource.data.createdBy);
+        allow delete: if isOwner(resource.data.createdBy);
+      }
+
+      // Video likes
+      match /likes/{userId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() && userId == request.auth.uid;
+        allow delete: if isOwner(userId);
       }
     }
 

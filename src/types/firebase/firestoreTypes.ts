@@ -51,3 +51,48 @@ export interface DbGroupMember {
   displayName: string | null;
   photoURL: string | null;
 }
+
+export interface DbVideo {
+  // Basic info
+  caption: string;
+  interests: string[];
+  groups: string[];
+
+  // Media URLs (from Firebase Storage)
+  videoUrl: string;
+  thumbnailUrl: string;
+
+  // Video metadata
+  duration: number;
+  size: number;
+
+  // Creator info
+  createdBy: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+
+  // Engagement metrics
+  likes: number;
+  comments: number;
+  shares: number;
+
+  // Status
+  isActive: boolean;
+  isProcessed: boolean;
+  processingError?: string;
+}
+
+export interface DbVideoComment {
+  videoId: string;
+  text: string;
+  createdBy: string;
+  createdAt: Timestamp;
+  likes: number;
+  isActive: boolean;
+}
+
+export interface DbVideoLike {
+  videoId: string;
+  userId: string;
+  createdAt: Timestamp;
+}
