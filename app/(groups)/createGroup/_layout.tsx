@@ -4,11 +4,10 @@ import { Container } from "@/components/ui/Container";
 import { ProgressIndicator } from "@/components/ui/ProgressIndicator";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";
-import { STEPS } from "./constants";
+import { STEPS } from "@/lib/constants/groups";
 import { useCreateGroupForm } from "@/hooks/useCreateGroupForm";
 import { createContext, useContext } from "react";
 import type { FormData } from "@/hooks/useCreateGroupForm";
-import type { Step } from "./constants";
 import React from "react";
 import { basicsSchema, visibilitySchema, postingSchema } from "@/schemas/group";
 

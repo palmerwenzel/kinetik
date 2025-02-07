@@ -1,3 +1,4 @@
+import React from "react";
 import { View, ScrollView } from "react-native";
 import { Controller } from "react-hook-form";
 import { Text } from "@/components/ui/Text";
@@ -5,16 +6,7 @@ import { Tag } from "@/components/ui/Tag";
 import { useCreateGroupFormContext } from "./_layout";
 import { AnimatedContainer } from "@/components/ui/AnimatedContainer";
 import { ANIMATION_PRESETS, getAnimationDelay } from "@/lib/constants/animations";
-
-const MEMBERSHIP_OPTIONS = [
-  { label: "Open", value: "open", description: "Anyone can join" },
-  { label: "Invite Only", value: "invite-only", description: "Members must be invited to join" },
-] as const;
-
-const VISIBILITY_OPTIONS = [
-  { label: "Public", value: "public", description: "Anyone can see this group" },
-  { label: "Private", value: "private", description: "Only members can see this group" },
-] as const;
+import { VISIBILITY_OPTIONS, MEMBERSHIP_OPTIONS } from "@/lib/constants/groups";
 
 export default function VisibilityStep() {
   const { form } = useCreateGroupFormContext();

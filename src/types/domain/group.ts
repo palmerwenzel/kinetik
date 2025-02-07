@@ -1,7 +1,7 @@
 import type { DbGroup } from "../firebase/firestoreTypes";
 import type { Interest } from "@/lib/constants/interests";
 
-export type GroupVisibilityLevel = DbGroup["visibility_level"];
+export type GroupVisibilityLevel = DbGroup["visibility"];
 export type PostingFrequency = DbGroup["posting_goal"]["frequency"];
 export type PostingScope = DbGroup["posting_goal"]["scope"];
 export type GroupMemberRole = DbGroup["members"][string]["role"];

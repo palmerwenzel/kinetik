@@ -1,5 +1,4 @@
 import { z } from "zod";
-import type { GroupVisibility, GroupMembership } from "@/types/firebase/firestoreTypes";
 
 export const basicsSchema = z.object({
   name: z

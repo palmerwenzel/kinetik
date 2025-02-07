@@ -75,12 +75,9 @@ service cloud.firestore {
 
     // Groups collection
     match /groups/{groupId} {
-      // Read rules
-      allow read: if 
-        // Public groups can be read by anyone
-        (resource.data.visibility == 'public') ||
-        // Private groups can only be read by members
-        (resource.data.visibility == 'private' && isGroupMember(resource.data));
+      // Read rules - user can read any group where they have any role
+      allow read: if isAuthenticated() && 
+        (request.auth.uid in resource.data.memberRoles);
 
       // Create rules
       allow create: if 
