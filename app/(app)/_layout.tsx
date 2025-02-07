@@ -1,8 +1,7 @@
 import { Tabs } from "expo-router";
 import { Text } from "@/components/ui/Text";
-import { View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth } from "@/lib/auth/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { Redirect } from "expo-router";
 
 export default function AppLayout() {
@@ -50,27 +49,13 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
-        name="feed/index"
+        name="for-you/index"
         options={{
-          title: "Feed",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="play-circle" size={size} color={color} />
-          ),
+          title: "For You",
+          tabBarIcon: ({ color, size }) => <Ionicons name="flame" size={size} color={color} />,
           tabBarLabel: ({ color }) => (
             <Text intent="muted" size="xs" style={{ color }}>
-              Feed
-            </Text>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="explore/index"
-        options={{
-          title: "Explore",
-          tabBarIcon: ({ color, size }) => <Ionicons name="compass" size={size} color={color} />,
-          tabBarLabel: ({ color }) => (
-            <Text intent="muted" size="xs" style={{ color }}>
-              Explore
+              For You
             </Text>
           ),
         }}
@@ -83,6 +68,18 @@ export default function AppLayout() {
           tabBarLabel: ({ color }) => (
             <Text intent="muted" size="xs" style={{ color }}>
               Create
+            </Text>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="explore/index"
+        options={{
+          title: "Explore",
+          tabBarIcon: ({ color, size }) => <Ionicons name="compass" size={size} color={color} />,
+          tabBarLabel: ({ color }) => (
+            <Text intent="muted" size="xs" style={{ color }}>
+              Explore
             </Text>
           ),
         }}

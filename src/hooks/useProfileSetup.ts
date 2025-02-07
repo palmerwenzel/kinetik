@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "expo-router";
-import { db } from "../firebase/config";
-import { useAuth } from "./AuthContext";
+import { db } from "../lib/firebase/config";
+import { useAuth } from "../hooks/useAuth";
 
 export function useProfileSetup() {
   const { user } = useAuth();

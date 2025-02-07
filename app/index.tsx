@@ -1,5 +1,5 @@
 import { Redirect } from "expo-router";
-import { useAuth } from "@/lib/auth/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import "../global.css";
 
 export default function Index() {

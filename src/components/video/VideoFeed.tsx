@@ -1,32 +1,36 @@
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, Dimensions, Pressable } from "react-native";
+import { View, Dimensions } from "react-native";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
   withSpring,
   useSharedValue,
   runOnJS,
-  withTiming,
-  Easing,
 } from "react-native-reanimated";
-import { VideoPlayer } from "./VideoPlayer";
-import { Feather } from "@expo/vector-icons";
+import { VideoPlayer } from "../video/VideoPlayer";
 
 interface Video {
   id: string;
   uri: string;
-  creator: string;
+  poster?: string;
+  username: string;
+  description: string;
+  sound: string;
+  likes: number;
+  comments: number;
+  shares: number;
 }
 
 interface VideoFeedProps {
   videos: Video[];
+  isScreenFocused: boolean;
   onEndReached?: () => void;
+  onLike?: (videoId: string) => void;
+  onComment?: (videoId: string) => void;
+  onShare?: (videoId: string) => void;
 }
 
 const { height: WINDOW_HEIGHT } = Dimensions.get("window");
-const SWIPE_THRESHOLD = WINDOW_HEIGHT * 0.2;
-
-// Spring animation config for smoother transitions
 const SPRING_CONFIG = {
   damping: 50,
   mass: 1,
@@ -36,84 +40,37 @@ const SPRING_CONFIG = {
   restDisplacementThreshold: 0.3,
 };
 
-// Timing config for when using timing animations
-const TIMING_CONFIG = {
-  duration: 400,
-  easing: Easing.bezier(0.25, 0.1, 0.25, 1), // ease
-};
-
-// Neumorphic styles for buttons
-const BUTTON_SHADOW = {
-  shadowColor: "#fff",
-  shadowOffset: { width: -2, height: -2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-};
-
-const BUTTON_SHADOW_PRESSED = {
-  shadowColor: "#000",
-  shadowOffset: { width: 2, height: 2 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
-};
-
-function EngagementButton({
-  icon,
-  label,
-  onPress,
-  isActive,
-  activeColor = "#ff4d4f",
-}: {
-  icon: keyof typeof Feather.glyphMap;
-  label: string;
-  onPress: () => void;
-  isActive?: boolean;
-  activeColor?: string;
-}) {
-  const [isPressed, setIsPressed] = useState(false);
-
-  return (
-    <Pressable
-      onPressIn={() => setIsPressed(true)}
-      onPressOut={() => setIsPressed(false)}
-      onPress={onPress}
-      style={[
-        {
-          alignItems: "center",
-          marginVertical: 8,
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-          borderRadius: 12,
-          padding: 8,
-        },
-        isPressed ? BUTTON_SHADOW_PRESSED : BUTTON_SHADOW,
-      ]}
-    >
-      <View
-        style={{
-          width: 44,
-          height: 44,
-          borderRadius: 22,
-          backgroundColor: isActive ? activeColor : "rgba(255, 255, 255, 0.15)",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 4,
-        }}
-      >
-        <Feather name={icon} size={24} color={isActive ? "#fff" : "white"} />
-      </View>
-      <Text style={{ color: isActive ? activeColor : "white" }} className="text-sm">
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
-export function VideoFeed({ videos, onEndReached }: VideoFeedProps) {
+export function VideoFeed({
+  videos,
+  isScreenFocused,
+  onEndReached,
+  onLike,
+  onComment,
+  onShare,
+}: VideoFeedProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [loadedVideos, setLoadedVideos] = useState<Set<string>>(new Set());
-  const [likedVideos, setLikedVideos] = useState<Set<string>>(new Set());
   const translateY = useSharedValue(0);
   const isDragging = useSharedValue(false);
+
+  // Calculate which video is becoming active based on translation
+  const getIsBecomingActive = useCallback(
+    (index: number) => {
+      "worklet";
+      if (index === activeIndex) {
+        // Current video is active unless we're dragging significantly away from it
+        return Math.abs(translateY.value) < WINDOW_HEIGHT * 0.5;
+      } else if (index === activeIndex + 1) {
+        // Next video becomes active when dragging up significantly
+        return translateY.value < -WINDOW_HEIGHT * 0.2;
+      } else if (index === activeIndex - 1) {
+        // Previous video becomes active when dragging down significantly
+        return translateY.value > WINDOW_HEIGHT * 0.2;
+      }
+      return false;
+    },
+    [activeIndex, translateY.value]
+  );
 
   // Ensure first video starts playing
   useEffect(() => {
@@ -179,18 +136,6 @@ export function VideoFeed({ videos, onEndReached }: VideoFeedProps) {
     [activeIndex, videos.length, onEndReached]
   );
 
-  const handleLike = useCallback((videoId: string) => {
-    setLikedVideos(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(videoId)) {
-        newSet.delete(videoId);
-      } else {
-        newSet.add(videoId);
-      }
-      return newSet;
-    });
-  }, []);
-
   const gesture = Gesture.Pan()
     .onBegin(() => {
       isDragging.value = true;
@@ -213,7 +158,7 @@ export function VideoFeed({ videos, onEndReached }: VideoFeedProps) {
       if (Math.abs(velocity) > 500) {
         // Fast swipe - use velocity for natural continuation
         handleSwipeComplete(velocity > 0 ? "down" : "up", velocity);
-      } else if (Math.abs(translateY.value) > SWIPE_THRESHOLD) {
+      } else if (Math.abs(translateY.value) > WINDOW_HEIGHT * 0.2) {
         // Threshold reached - use current velocity for natural continuation
         handleSwipeComplete(translateY.value > 0 ? "down" : "up", velocity);
       } else {
@@ -225,20 +170,9 @@ export function VideoFeed({ videos, onEndReached }: VideoFeedProps) {
       }
     });
 
-  const rStyle = useAnimatedStyle(() => {
-    // Always use the current value without additional spring interpolation
-    return {
-      transform: [{ translateY: translateY.value }],
-    };
-  });
-
-  if (!videos.length) {
-    return (
-      <View className="flex-1 items-center justify-center bg-black">
-        <Text className="text-white text-lg">No videos available</Text>
-      </View>
-    );
-  }
+  const rStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
   return (
     <GestureDetector gesture={gesture}>
@@ -254,22 +188,14 @@ export function VideoFeed({ videos, onEndReached }: VideoFeedProps) {
           ]}
         >
           {videos.map((video, index) => {
-            const isActive = index === activeIndex;
+            const isActive = index === activeIndex && isScreenFocused;
             const isAdjacent = Math.abs(index - activeIndex) === 1;
             const shouldRender = isActive || isAdjacent;
-            const isLiked = likedVideos.has(video.id);
+            const isBecomingActive = getIsBecomingActive(index) && isScreenFocused;
 
             if (!shouldRender) return null;
 
             const translateYValue = (index - activeIndex) * WINDOW_HEIGHT;
-
-            // Assign tags based on video ID (for demo purposes)
-            const tags = [
-              video.id === "1" ? "programming" : null,
-              video.id === "2" ? "AI" : null,
-              video.id === "3" ? "lifting" : null,
-              video.id === "4" ? "running" : null,
-            ].filter(Boolean) as string[];
 
             return (
               <View
@@ -280,47 +206,14 @@ export function VideoFeed({ videos, onEndReached }: VideoFeedProps) {
                 }}
               >
                 <VideoPlayer
-                  uri={video.uri}
+                  {...video}
                   isActive={isActive}
+                  isBecomingActive={isBecomingActive}
+                  onLike={() => onLike?.(video.id)}
+                  onComment={() => onComment?.(video.id)}
+                  onShare={() => onShare?.(video.id)}
                   onError={error => console.error(`Video ${video.id} error:`, error)}
-                  onLoad={() => {
-                    if (!loadedVideos.has(video.id)) {
-                      setLoadedVideos(prev => new Set([...prev, video.id]));
-                    }
-                  }}
                 />
-
-                {/* Engagement buttons */}
-                <View className="absolute right-4 bottom-20" style={{ alignItems: "center" }}>
-                  <EngagementButton
-                    icon="heart"
-                    label="Like"
-                    isActive={isLiked}
-                    onPress={() => handleLike(video.id)}
-                  />
-                  <EngagementButton
-                    icon="share"
-                    label="Share"
-                    onPress={() => console.log("Share pressed")}
-                  />
-                  <EngagementButton
-                    icon="more-vertical"
-                    label="More"
-                    onPress={() => console.log("More pressed")}
-                  />
-                </View>
-
-                {/* Creator info */}
-                <View className="absolute bottom-4 left-4">
-                  <Text className="text-white text-lg font-semibold mb-2">{video.creator}</Text>
-                  <View className="flex-row gap-2">
-                    {tags.map(tag => (
-                      <View key={tag} className="bg-white/20 px-3 py-1 rounded-full">
-                        <Text className="text-white text-sm">#{tag}</Text>
-                      </View>
-                    ))}
-                  </View>
-                </View>
               </View>
             );
           })}

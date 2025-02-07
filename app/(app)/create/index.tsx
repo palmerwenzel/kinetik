@@ -1,8 +1,10 @@
+import React from "react";
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { AnimatedContainer } from "@/components/ui/AnimatedContainer";
 import { Button } from "@/components/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 export default function CreateScreen() {
   return (
@@ -18,16 +20,29 @@ export default function CreateScreen() {
             </Text>
           </View>
 
-          <Button
-            variant="neu-pressed"
-            className="w-48 h-48 rounded-3xl items-center justify-center"
-            onPress={() => {}}
-          >
-            <Ionicons name="videocam" size={48} color="#FF6B00" />
-            <Text intent="accent" className="mt-4">
-              Record Video
-            </Text>
-          </Button>
+          <View className="flex-col space-y-4">
+            <Button
+              variant="neu-pressed"
+              className="w-48 h-48 rounded-3xl items-center justify-center"
+              onPress={() => router.push("/(create)/camera")}
+            >
+              <Ionicons name="videocam" size={48} color="#FF6B00" />
+              <Text intent="accent" className="mt-4">
+                Record Video
+              </Text>
+            </Button>
+
+            <Button
+              variant="neu-pressed"
+              className="w-48 h-24 rounded-2xl items-center justify-center"
+              onPress={() => router.push("/(create)/library")}
+            >
+              <Ionicons name="images" size={32} color="#FF6B00" />
+              <Text intent="accent" className="mt-2">
+                Upload Video
+              </Text>
+            </Button>
+          </View>
         </View>
       </AnimatedContainer>
     </View>

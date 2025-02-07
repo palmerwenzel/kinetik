@@ -1,7 +1,7 @@
 import { View } from "react-native";
 import { Text } from "@/components/ui/Text";
 import { AnimatedContainer } from "@/components/ui/AnimatedContainer";
-import { useAuth } from "@/lib/auth/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/Button";
 
 export default function ProfileScreen() {

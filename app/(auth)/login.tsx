@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link, router } from "expo-router";
-import { useAuth } from "@/lib/auth/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { FirebaseError } from "firebase/app";
 import { Text } from "@/components/ui/Text";
 import { Button } from "@/components/ui/Button";

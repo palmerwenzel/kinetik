@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
-import { useAuth } from "@/lib/auth/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { FirebaseError } from "firebase/app";
 import { doc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";

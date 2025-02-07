@@ -2,11 +2,11 @@
  * Firebase configuration and initialization
  */
 import { initializeApp, getApp } from "firebase/app";
-import { initializeAuth, getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import Constants from "expo-constants";
-import { connectToEmulators } from "./emulator";
+import { Platform } from "react-native";
 
 // Validate required Firebase configuration
 const requiredConfig = [
@@ -39,7 +39,12 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+let app;
+try {
+  app = getApp();
+} catch {
+  app = initializeApp(firebaseConfig);
+}
 
 // Initialize Firebase Auth
 export const auth = getAuth(app);
@@ -59,16 +64,9 @@ onAuthStateChanged(auth, user => {
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
-// Connect to emulators in development
-if (Constants.expoConfig?.extra?.useEmulator) {
-  connectToEmulators(auth, db, storage);
-}
-
-// Helper function to get the Firebase app instance
-export function getFirebaseApp() {
-  try {
-    return getApp();
-  } catch {
-    return initializeApp(firebaseConfig);
-  }
-}
+// Log platform and environment info
+console.log(`📱 Platform: ${Platform.OS}`);
+console.log("🔧 Firebase Config:", {
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId,
+});

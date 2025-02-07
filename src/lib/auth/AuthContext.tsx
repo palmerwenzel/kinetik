@@ -1,18 +1,22 @@
-import { createContext, useContext, useEffect, useState } from "react";
+/**
+ * Authentication context and provider for managing user authentication state
+ */
+import React, { createContext, useEffect, useState } from "react";
 import {
-  User,
+  User as FirebaseUser,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
   GoogleAuthProvider,
   signInWithCredential,
   UserCredential,
+  onAuthStateChanged,
 } from "firebase/auth";
 import * as Google from "expo-auth-session/providers/google";
-import { AuthSessionResult } from "expo-auth-session";
 import { auth } from "../firebase/config";
 import Constants from "expo-constants";
 import * as WebBrowser from "expo-web-browser";
+import type { User } from "../../hooks/useAuth";
 
 // Register for native Google auth
 WebBrowser.maybeCompleteAuthSession();
@@ -26,9 +30,13 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<UserCredential>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -43,12 +51,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        setUser({
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL,
+        });
+      } else {
+        setUser(null);
+      }
       setIsLoading(false);
     });
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
 
   const signIn = async (email: string, password: string) => {
@@ -84,7 +101,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log("🔄 Starting Google Sign-In process...");
       console.log("📋 Request details:", {
-        // Redact actual IDs but log if they exist
         hasAndroidId: !!Constants.expoConfig?.extra?.googleAndroidClientId,
         hasIosId: !!Constants.expoConfig?.extra?.googleIosClientId,
         hasWebId: !!Constants.expoConfig?.extra?.googleWebClientId,
@@ -100,11 +116,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { id_token } = result.params;
         console.log("✅ Received Google token");
 
-        // Create a Google credential with the token
         const credential = GoogleAuthProvider.credential(id_token);
         console.log("🔑 Created Google credential");
 
-        // Sign in with the credential
         const userCredential = await signInWithCredential(auth, credential);
         console.log("👤 Successfully signed in with Google", userCredential.user.email);
         return userCredential;
@@ -142,12 +156,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 }

@@ -2,98 +2,115 @@
 
 ## Project State
 
-Project Phase: Phase 1.5 - Video Feed MVP
-Current Task: Implement TikTok-style video feed with vertical swipe navigation
+Project Phase: Phase 2 - Video Creation MVP
+Current Task: Implement in-app video recording and editing functionality
 
 ## Break the task into manageable component tasks
 
-- Set up full-screen video feed container
-- Implement vertical swipe navigation
-- Create video player component with basic controls
-- Add autoplay/pause on swipe functionality
-- Implement loading states and placeholders
+- [x] Set up camera access and permissions
+- [ ] Switch from expo-camera to react-native-camera-kit
+  - [ ] Install and configure react-native-camera-kit
+  - [ ] Update VideoRecorder component
+  - [ ] Test camera functionality
+  - [ ] Verify video quality and performance
+- [ ] Create video recording interface
+- [ ] Implement basic video controls (start/stop recording)
+- [ ] Add video preview functionality
+- [ ] Implement basic video editing features
+  - [ ] Trimming
+  - [ ] Adding music/sounds
+  - [ ] Basic filters
+- [ ] Create upload flow for recorded videos
 
 ## Understanding Phase Findings
 
 ### Documentation Review Results
 
-- Technical Guidelines: Expo AV for video playback, React Native Gesture Handler for swipes
-- Related Components: Existing AnimatedContainer and UI components
-- Similar Features: None yet (first video implementation)
-- Integration Points: Firebase Storage for video content
+- Technical Guidelines:
+  - react-native-camera-kit for video recording (Tesla's production-grade camera library)
+  - Expo AV for video preview and editing
+  - Expo Media Library for saving videos
+  - React Native Vision Camera as alternative for advanced features
+- Related Components: Existing VideoPlayer component
+- Similar Features: Video playback in feed
+- Integration Points: Firebase Storage for video upload
 
 ### Key Requirements
 
 - Functional:
-  - Full-screen video playback
-  - Smooth vertical swipe navigation
-  - Autoplay/pause on swipe
-  - Basic video controls
+  - Camera access and recording
+  - Video preview during/after recording
+  - Basic video editing capabilities
+  - Upload to Firebase Storage
 - Technical:
-  - Use Expo AV for video playback
-  - Implement efficient view recycling
-  - Handle video buffering states
-  - Manage memory efficiently
+  - Use react-native-camera-kit
+  - Efficient video processing
+  - Handle permissions properly
+  - Manage storage efficiently
 - Design:
-  - Full-screen immersive experience
-  - Smooth transitions between videos
-  - Loading states and placeholders
-  - Minimal UI overlays
+  - Instagram/TikTok-like recording interface
+  - Intuitive editing controls
+  - Progress indicators
+  - Clear success/error states
 
 ## Planning Phase Results
 
 ### Architecture Plan
 
 - Component Structure:
-  - VideoFeed container (manages swipe and state)
-  - VideoPlayer component (handles playback)
-  - VideoControls overlay (play/pause, sound)
-  - LoadingPlaceholder component
+  - VideoRecorder (handles recording)
+  - VideoPreview (playback recorded content)
+  - VideoEditor (editing interface)
+  - EditControls (trimming, filters)
+  - UploadProgress component
 - State Management:
-  - Video playback states
-  - Loading and buffering states
-  - Current video index
+  - Recording state
+  - Editing state
+  - Upload progress
 - Data Flow:
-  - Video URLs from Firebase
-  - Playback events to UI
-  - Gesture events to video control
+  - Camera feed to storage
+  - Edit operations to preview
+  - Final video to Firebase
 
 ### Technical Approach
 
-- Video Integration:
-  - Expo AV for playback
-  - Firebase Storage for content
+- Video Recording:
+  - react-native-camera-kit
+  - Local storage for temp files
+- Editing Features:
+  - FFmpeg for video processing
+  - Custom filters implementation
 - Performance:
-  - View recycling for memory
-  - Video preloading
-  - State caching
+  - Efficient video processing
+  - Background upload
 - Key Dependencies:
+  - react-native-camera-kit
   - expo-av
-  - react-native-gesture-handler
-  - firebase/storage
+  - expo-media-library
+  - @react-native-vision-camera
+  - ffmpeg-kit-react-native
 
 ## Implementation Checklist
 
 ### Setup
 
 - [ ] Install required dependencies
-- [ ] Set up basic component structure
-- [ ] Create video utilities
+- [ ] Set up permissions handling
+- [ ] Create base components
 
 ### Development Progress
 
-- [ ] Full-screen container
-- [ ] Video player component
-- [ ] Swipe navigation
-- [ ] Autoplay behavior
-- [ ] Loading states
-- [ ] Basic controls
+- [ ] Camera interface
+- [ ] Recording functionality
+- [ ] Video preview
+- [ ] Basic editing features
+- [ ] Upload mechanism
 
 ### Integration
 
-- [ ] Video loading
-- [ ] Gesture handling
-- [ ] State management
+- [ ] Permissions flow
+- [ ] Storage integration
+- [ ] Upload to Firebase
 
 ## Checkpoints
 
@@ -106,7 +123,7 @@ Current Task: Implement TikTok-style video feed with vertical swipe navigation
 
 ## Notes & Decisions
 
-- Using Expo AV for reliable video playback
-- Implementing view recycling for performance
-- Starting with basic controls, can enhance later
-- Focus on smooth transitions and loading states
+- Using react-native-camera-kit for MVP, can upgrade to Vision Camera if needed
+- Starting with basic editing features, can enhance later
+- Implementing background upload for better UX
+- Need to handle storage cleanup for temp files
