@@ -2,115 +2,92 @@
 
 ## Project State
 
-Project Phase: Phase 2 - Video Creation MVP
-Current Task: Implement in-app video recording and editing functionality
+Project Phase: Phase 2 - Groups Feature
+Current Task: Refactoring group creation into modular components
 
 ## Break the task into manageable component tasks
 
-- [x] Set up camera access and permissions
-- [ ] Switch from expo-camera to react-native-camera-kit
-  - [ ] Install and configure react-native-camera-kit
-  - [ ] Update VideoRecorder component
-  - [ ] Test camera functionality
-  - [ ] Verify video quality and performance
-- [ ] Create video recording interface
-- [ ] Implement basic video controls (start/stop recording)
-- [ ] Add video preview functionality
-- [ ] Implement basic video editing features
-  - [ ] Trimming
-  - [ ] Adding music/sounds
-  - [ ] Basic filters
-- [ ] Create upload flow for recorded videos
+- [ ] Create directory structure for group creation
+  - [ ] Set up create/ directory with \_layout and steps/
+  - [ ] Move shared components to components/
+  - [ ] Create step-specific files
+- [ ] Implement shared form context
+  - [ ] Move form state to \_layout
+  - [ ] Create step navigation logic
+  - [ ] Handle form validation
+- [ ] Refactor individual steps
+  - [ ] Extract basics step
+  - [ ] Extract visibility step
+  - [ ] Extract posting step
+  - [ ] Extract review step
+- [ ] Create shared components
+  - [ ] Progress steps indicator
+  - [ ] Step header
+  - [ ] Navigation buttons
 
 ## Understanding Phase Findings
 
 ### Documentation Review Results
 
-- Technical Guidelines:
-  - react-native-camera-kit for video recording (Tesla's production-grade camera library)
-  - Expo AV for video preview and editing
-  - Expo Media Library for saving videos
-  - React Native Vision Camera as alternative for advanced features
-- Related Components: Existing VideoPlayer component
-- Similar Features: Video playback in feed
-- Integration Points: Firebase Storage for video upload
+- Technical Guidelines: Following codebase organization rules for modular components
+- Existing Components: Current group creation form with step-based UI
+- Similar Features: Profile setup flow with step-based navigation
+- Integration Points: Form context shared between steps
 
 ### Key Requirements
 
 - Functional:
-  - Camera access and recording
-  - Video preview during/after recording
-  - Basic video editing capabilities
-  - Upload to Firebase Storage
+  - Maintain current form functionality
+  - Keep step-based navigation
+  - Preserve validation rules
 - Technical:
-  - Use react-native-camera-kit
-  - Efficient video processing
-  - Handle permissions properly
-  - Manage storage efficiently
+  - Clean separation of concerns
+  - Shared form context
+  - Type safety across components
 - Design:
-  - Instagram/TikTok-like recording interface
-  - Intuitive editing controls
-  - Progress indicators
-  - Clear success/error states
+  - Consistent UI between steps
+  - Smooth transitions
+  - Clear navigation
 
 ## Planning Phase Results
 
 ### Architecture Plan
 
 - Component Structure:
-  - VideoRecorder (handles recording)
-  - VideoPreview (playback recorded content)
-  - VideoEditor (editing interface)
-  - EditControls (trimming, filters)
-  - UploadProgress component
+  - Layout manages form state and navigation
+  - Individual step components handle their UI
+  - Shared components for common elements
 - State Management:
-  - Recording state
-  - Editing state
-  - Upload progress
-- Data Flow:
-  - Camera feed to storage
-  - Edit operations to preview
-  - Final video to Firebase
+  - Form context in layout
+  - Step state in layout
+  - Local UI state in steps
 
 ### Technical Approach
 
-- Video Recording:
-  - react-native-camera-kit
-  - Local storage for temp files
-- Editing Features:
-  - FFmpeg for video processing
-  - Custom filters implementation
-- Performance:
-  - Efficient video processing
-  - Background upload
-- Key Dependencies:
-  - react-native-camera-kit
-  - expo-av
-  - expo-media-library
-  - @react-native-vision-camera
-  - ffmpeg-kit-react-native
+- Form Management: React Hook Form + Zod at layout level
+- Navigation: Step-based routing with shared context
+- UI Components: Reuse existing neumorphic system
 
 ## Implementation Checklist
 
 ### Setup
 
-- [ ] Install required dependencies
-- [ ] Set up permissions handling
-- [ ] Create base components
+- [ ] Create directory structure
+- [ ] Set up shared types
+- [ ] Configure step navigation
 
 ### Development Progress
 
-- [ ] Camera interface
-- [ ] Recording functionality
-- [ ] Video preview
-- [ ] Basic editing features
-- [ ] Upload mechanism
+- [ ] Form context
+- [ ] Step components
+- [ ] Shared components
+- [ ] Navigation logic
 
 ### Integration
 
-- [ ] Permissions flow
-- [ ] Storage integration
-- [ ] Upload to Firebase
+- [ ] Form validation
+- [ ] Step transitions
+- [ ] Error handling
 
 ## Checkpoints
 
@@ -123,7 +100,5 @@ Current Task: Implement in-app video recording and editing functionality
 
 ## Notes & Decisions
 
-- Using react-native-camera-kit for MVP, can upgrade to Vision Camera if needed
-- Starting with basic editing features, can enhance later
-- Implementing background upload for better UX
-- Need to handle storage cleanup for temp files
+- Decision 1: Split into modular files for better maintainability
+- Decision 2: Use shared form context in layout for state management

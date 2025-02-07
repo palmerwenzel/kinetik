@@ -3,8 +3,11 @@ import { Text } from "@/components/ui/Text";
 import { AnimatedContainer } from "@/components/ui/AnimatedContainer";
 import { Button } from "@/components/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   return (
     <View className="flex-1">
       <AnimatedContainer variant="flat-surface" className="flex-1 px-4 py-12">
@@ -20,12 +23,39 @@ export default function HomeScreen() {
               You haven&apos;t joined any groups yet. Don&apos;t worry—we&apos;ll help you connect
               with like-minded creators.
             </Text>
-            <Button
-              variant="neu-accent"
-              textComponent={<Text intent="button-accent">Explore Groups</Text>}
-              onPress={() => {}}
-              className="w-48 self-center"
-            />
+            <View className="w-full space-y-4">
+              <View className="flex-row items-center w-full">
+                <Button
+                  variant="neu-accent"
+                  textComponent={
+                    <View className="flex-row items-center">
+                      <Ionicons
+                        name="add-circle-outline"
+                        size={20}
+                        color="#FFFFFF"
+                        className="mr-2"
+                      />
+                      <Text intent="button-accent">Create a Group</Text>
+                    </View>
+                  }
+                  onPress={() => router.push("/(groups)/createGroup")}
+                  className="flex-1"
+                />
+              </View>
+              <View className="flex-row items-center w-full">
+                <Button
+                  variant="neu-raised"
+                  textComponent={
+                    <View className="flex-row items-center">
+                      <Ionicons name="search-outline" size={20} color="#666666" className="mr-2" />
+                      <Text>Explore Groups</Text>
+                    </View>
+                  }
+                  onPress={() => router.push("/(app)/explore")}
+                  className="flex-1"
+                />
+              </View>
+            </View>
           </View>
         </View>
       </AnimatedContainer>

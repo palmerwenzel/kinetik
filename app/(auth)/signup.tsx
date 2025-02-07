@@ -125,7 +125,7 @@ export default function SignupScreen() {
     >
       <AnimatedContainer
         variant="flat-surface"
-        className="flex-1 px-8 py-12"
+        className="flex-1 px-8 py-24"
         duration={ANIMATION_PRESETS.screen.duration}
         initialOffsetY={ANIMATION_PRESETS.screen.initialOffsetY}
       >

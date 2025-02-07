@@ -11,6 +11,16 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    function isGroupMember(groupData) {
+      return isAuthenticated() && (request.auth.uid in groupData.memberRoles);
+    }
+
+    function isGroupAdmin(groupData) {
+      return isAuthenticated() && 
+        (request.auth.uid in groupData.memberRoles) && 
+        groupData.memberRoles[request.auth.uid] == "admin";
+    }
+
     function isValidUserData() {
       let incomingData = request.resource.data;
       return 
@@ -33,6 +43,15 @@ service cloud.firestore {
           ]);
     }
 
+    function isValidGroupData() {
+      let data = request.resource.data;
+      return data.keys().hasAll([
+        'name', 'visibility', 'membership', 'postingGoal', 
+        'createdBy', 'createdAt', 'updatedAt', 'memberRoles',
+        'memberCount', 'isActive'
+      ]);
+    }
+
     // User profiles
     match /users/{userId} {
       // Basic read rules - anyone can read basic profile info
@@ -52,6 +71,43 @@ service cloud.firestore {
     match /users/{userId}/interests/{interestId} {
       allow read: if resource.data.privacySettings.isPublic == true || isOwner(userId);
       allow write: if isOwner(userId);
+    }
+
+    // Groups collection
+    match /groups/{groupId} {
+      // Read rules
+      allow read: if 
+        // Public groups can be read by anyone
+        (resource.data.visibility == 'public') ||
+        // Private groups can only be read by members
+        (resource.data.visibility == 'private' && isGroupMember(resource.data));
+
+      // Create rules
+      allow create: if 
+        isAuthenticated() && 
+        isValidGroupData() && 
+        request.resource.data.createdBy == request.auth.uid;
+
+      // Update rules
+      allow update: if isGroupAdmin(resource.data);
+
+      // Delete rules
+      allow delete: if isGroupAdmin(resource.data);
+
+      // Members subcollection
+      match /members/{memberId} {
+        allow read: if isGroupMember(get(/databases/$(database)/documents/groups/$(groupId)).data);
+        allow create: if 
+          isAuthenticated() && 
+          // Only admins can add members directly
+          isGroupAdmin(get(/databases/$(database)/documents/groups/$(groupId)).data) ||
+          // Or if the group is "open" and someone is adding themselves
+          (
+            get(/databases/$(database)/documents/groups/$(groupId)).data.membership == "open" &&
+            request.resource.data.uid == request.auth.uid
+          );
+        allow update, delete: if isGroupAdmin(get(/databases/$(database)/documents/groups/$(groupId)).data);
+      }
     }
 
     // Default deny all other access

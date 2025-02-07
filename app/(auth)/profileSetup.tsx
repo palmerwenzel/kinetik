@@ -7,7 +7,7 @@ import { router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { useAuth } from "@/hooks/useAuth";
 import { FirebaseError } from "firebase/app";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc, writeBatch } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "@/lib/firebase/config";
 import { Text } from "@/components/ui/Text";
@@ -26,6 +26,12 @@ import { SuccessOverlay } from "@/components/ui/SuccessOverlay";
 const nameSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(20, "Username must be less than 20 characters")
+    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores")
+    .transform(val => val.toLowerCase()),
 });
 
 type NameFormData = z.infer<typeof nameSchema>;
@@ -53,6 +59,7 @@ export default function ProfileSetupScreen() {
   const [isUploading, setIsUploading] = useState(false);
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
 
   // Use mock user in development
   const activeUser = Constants.expoConfig?.extra?.USE_MOCK_USER ? MOCK_USER : user;
@@ -65,15 +72,44 @@ export default function ProfileSetupScreen() {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setError: setFormError,
   } = useForm<NameFormData>({
     resolver: zodResolver(nameSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
+      username: "",
     },
     mode: "onChange",
     reValidateMode: "onChange",
   });
+
+  // Check if username is unique
+  const checkUsernameUnique = async (username: string) => {
+    try {
+      setIsCheckingUsername(true);
+      const usernameRef = doc(db, "usernames", username);
+      const usernameDoc = await getDoc(usernameRef);
+
+      if (usernameDoc.exists()) {
+        const data = usernameDoc.data();
+        // Make sure we're not checking against our own username
+        if (data.uid !== activeUser?.uid) {
+          setFormError("username", {
+            type: "manual",
+            message: "Username is already taken",
+          });
+          return false;
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error("Error checking username:", error);
+      return false;
+    } finally {
+      setIsCheckingUsername(false);
+    }
+  };
 
   const updateUserProfile = async (data: NameFormData) => {
     if (!activeUser) {
@@ -82,11 +118,30 @@ export default function ProfileSetupScreen() {
     }
 
     try {
-      await updateDoc(doc(db, "users", activeUser.uid), {
+      // Check username uniqueness
+      const isUnique = await checkUsernameUnique(data.username);
+      if (!isUnique) return;
+
+      // Create a batch to update both user profile and username document
+      const batch = writeBatch(db);
+
+      // Update user profile
+      const userRef = doc(db, "users", activeUser.uid);
+      batch.update(userRef, {
         firstName: data.firstName,
         lastName: data.lastName,
+        username: data.username,
         updatedAt: new Date().toISOString(),
       });
+
+      // Reserve username
+      const usernameRef = doc(db, "usernames", data.username);
+      batch.set(usernameRef, {
+        uid: activeUser.uid,
+        createdAt: new Date().toISOString(),
+      });
+
+      await batch.commit();
       setCurrentStep("photo");
     } catch (error) {
       console.error("Error updating user profile:", error);
@@ -242,7 +297,7 @@ export default function ProfileSetupScreen() {
       >
         <AnimatedContainer
           variant="flat-surface"
-          className="flex-1 px-8 py-12"
+          className="flex-1 px-8 py-24"
           duration={isFirstRender ? ANIMATION_PRESETS.screen.duration : 0}
           initialOffsetY={isFirstRender ? ANIMATION_PRESETS.screen.initialOffsetY : 0}
         >
@@ -311,6 +366,7 @@ export default function ProfileSetupScreen() {
                   errors={errors}
                   isSubmitting={isSubmitting}
                   onSubmit={handleSubmit(updateUserProfile)}
+                  isCheckingUsername={isCheckingUsername}
                 />
               </AnimatedContainer>
             )}

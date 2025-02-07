@@ -1,12 +1,12 @@
 import { Stack } from "expo-router";
 
-export default function CreateLayout() {
+export default function GroupsLayout() {
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        presentation: "card",
-        animation: "none",
+        presentation: "modal",
+        animation: "slide_from_bottom",
       }}
     />
   );

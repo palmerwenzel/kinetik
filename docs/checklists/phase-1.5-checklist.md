@@ -11,28 +11,28 @@ This emergency phase implements core video viewing features to create an engagin
 - [x] FRONTEND: Implement bottom tab navigation with Home, Feed, Create, and Profile tabs.
 - [x] FRONTEND: Set up navigation container and route configuration using Expo Router.
 - [x] FRONTEND: Create Home screen with daily overview and quick actions.
-- [ ] FRONTEND: Create Feed screen for TikTok-style video viewing.
-- [ ] FRONTEND: Create minimal Create screen for video upload.
-- [x] FRONTEND: Create Profile screen showing basic user info and activity.
+- [x] FRONTEND: Create Feed screen for TikTok-style video viewing.
+- [x] FRONTEND: Create minimal Create screen for video upload.
+- [ ] FRONTEND: Create Profile screen showing basic user info and activity.
 - [x] FRONTEND: Apply neumorphic styling to navigation bar following [@theme-rules.md](../rules/theme-rules.md).
 
 ### Video Feed Core
 
-- [ ] FRONTEND: Build full-screen video feed container with vertical swipe navigation.
-- [ ] FRONTEND: Implement video player component with autoplay/pause on swipe.
-- [ ] FRONTEND: Add loading states and video thumbnails for better UX.
-- [ ] FRONTEND: Create engagement buttons (like, share) with neumorphic design.
-- [ ] BACKEND: Set up Firebase Storage structure for video content.
+- [x] FRONTEND: Build full-screen video feed container with vertical swipe navigation.
+- [x] FRONTEND: Implement video player component with autoplay/pause on swipe.
+- [x] FRONTEND: Add loading states and video thumbnails for better UX.
+- [x] FRONTEND: Create engagement buttons (like, share) with neumorphic design.
+- [x] BACKEND: Set up Firebase Storage structure for video content.
 - [ ] BACKEND: Create Firestore collection for video metadata (creator, timestamp, likes).
 
 ### Video Playback
 
-- [ ] FRONTEND: Integrate Expo AV for video playback control.
-- [ ] FRONTEND: Implement video preloading for smooth transitions.
-- [ ] FRONTEND: Add play/pause on tap functionality.
-- [ ] FRONTEND: Handle video buffering states with loading indicators.
-- [ ] FRONTEND: Implement video sound control with mute/unmute.
-- [ ] FRONTEND: Add progress bar for video timeline.
+- [x] FRONTEND: Integrate Expo AV for video playback control.
+- [x] FRONTEND: Implement video preloading for smooth transitions.
+- [x] FRONTEND: Add play/pause on tap functionality.
+- [x] FRONTEND: Handle video buffering states with loading indicators.
+- [x] FRONTEND: Implement video sound control with mute/unmute.
+- [x] FRONTEND: Add progress bar for video timeline.
 
 ### Performance & UX
 

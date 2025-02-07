@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Video, AVPlaybackStatus, ResizeMode } from "expo-av";
 import { Text } from "@/components/ui/Text";
@@ -15,6 +15,18 @@ export function VideoPreview({ uri, onSave, onRetake }: VideoPreviewProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const videoRef = useRef<Video>(null);
+
+  const togglePlayback = async () => {
+    setIsPlaying(prev => !prev);
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      await videoRef.current.pauseAsync();
+    } else {
+      await videoRef.current.playAsync();
+    }
+  };
 
   useEffect(() => {
     console.log("[VideoPreview] Mounting with URI:", uri);
@@ -50,6 +62,7 @@ export function VideoPreview({ uri, onSave, onRetake }: VideoPreviewProps) {
     <View className="flex-1 bg-black">
       <View className="flex-1">
         <Video
+          ref={videoRef}
           source={{ uri }}
           resizeMode={ResizeMode.CONTAIN}
           shouldPlay={false}
@@ -57,7 +70,7 @@ export function VideoPreview({ uri, onSave, onRetake }: VideoPreviewProps) {
           onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
           onError={handleError}
           style={{ flex: 1, backgroundColor: "black" }}
-          useNativeControls={false}
+          useNativeControls={true}
         />
 
         {isLoading && (
@@ -74,7 +87,9 @@ export function VideoPreview({ uri, onSave, onRetake }: VideoPreviewProps) {
 
         <TouchableOpacity
           className="absolute inset-0 items-center justify-center"
-          onPress={() => setIsPlaying(!isPlaying)}
+          onPress={() => {
+            togglePlayback();
+          }}
         >
           {!isPlaying && !isLoading && !error && (
             <View className="w-20 h-20 rounded-full bg-black/50 items-center justify-center">

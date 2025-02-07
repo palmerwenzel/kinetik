@@ -22,6 +22,7 @@ function RootLayoutNav() {
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(app)" />
       <Stack.Screen name="(create)" />
+      <Stack.Screen name="(groups)" />
     </Stack>
   );
 }

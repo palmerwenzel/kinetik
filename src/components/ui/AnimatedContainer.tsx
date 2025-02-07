@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Animated, ViewProps } from "react-native";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
@@ -66,12 +66,16 @@ export function AnimatedContainer({
   style,
   ...props
 }: AnimatedContainerProps) {
-  const translateY = new Animated.Value(initialOffsetY);
-  const opacity = new Animated.Value(0);
+  const translateY = useRef(new Animated.Value(initialOffsetY)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
+  const hasAnimated = useRef(false);
 
   useEffect(() => {
+    if (hasAnimated.current) return;
+    hasAnimated.current = true;
+
     // Sequence of animations
     Animated.parallel([
       // Fade in
