@@ -23,7 +23,7 @@ service firebase.storage {
       return isVideoType && withinSizeLimit;
     }
 
-    function isValidThumbnail() {
+    function isValidImage() {
       // Check file type
       let contentType = request.resource.contentType;
       let isImageType = contentType.matches('image/.*');
@@ -33,6 +33,19 @@ service firebase.storage {
       let withinSizeLimit = request.resource.size <= maxSize;
 
       return isImageType && withinSizeLimit;
+    }
+
+    function isValidThumbnail() {
+      return isValidImage();
+    }
+
+    // Profile photo upload rules
+    match /profile-photos/{userId} {
+      // Anyone can view profile photos
+      allow read: if true;
+      
+      // Only the user can upload their own profile photo
+      allow write: if isOwner(userId) && isValidImage();
     }
 
     // Video upload rules

@@ -1,66 +1,122 @@
 import { View } from "react-native";
 import { VideoFeed } from "@/components/video/VideoFeed";
 import { useIsFocused } from "@react-navigation/native";
+import {
+  collection,
+  query,
+  orderBy,
+  limit,
+  getDocs,
+  startAfter,
+  where,
+  QueryDocumentSnapshot,
+} from "firebase/firestore";
+import { db } from "@/lib/firebase/config";
+import { useState, useCallback, useEffect } from "react";
+import type { DbVideo } from "@/types/firebase/firestoreTypes";
+import { useToast } from "@/hooks/useToast";
+import { useVideoLikes } from "@/hooks/useVideoLikes";
 
-const DEMO_VIDEOS = [
-  {
-    id: "1",
-    uri: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    poster: "https://picsum.photos/id/237/400/800",
-    username: "fitness_pro",
-    description: "Morning HIIT workout 🔥 #fitness #workout #motivation",
-    sound: "Original Sound - fitness_pro",
-    likes: 1234,
-    comments: 89,
-    shares: 45,
-  },
-  {
-    id: "2",
-    uri: "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-    poster: "https://picsum.photos/id/238/400/800",
-    username: "tech_lifter",
-    description: "Coding between sets 💻💪 #programming #fitness #techlife",
-    sound: "Lofi Beats - chill_vibes",
-    likes: 892,
-    comments: 56,
-    shares: 23,
-  },
-  {
-    id: "3",
-    uri: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-    poster: "https://picsum.photos/id/239/400/800",
-    username: "ai_runner",
-    description: "Training my AI model while training myself 🤖🏃‍♂️ #AI #running",
-    sound: "Synthwave - future_beats",
-    likes: 2341,
-    comments: 167,
-    shares: 89,
-  },
-  {
-    id: "4",
-    uri: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-    poster: "https://picsum.photos/id/240/400/800",
-    username: "dev_warrior",
-    description: "Post-coding gym session 🏋️‍♂️ #developer #fitness #balance",
-    sound: "Workout Mix - gym_beats",
-    likes: 1567,
-    comments: 123,
-    shares: 67,
-  },
-];
+const VIDEOS_PER_PAGE = 5;
+
+type LastVisibleType = QueryDocumentSnapshot<DbVideo>;
+type VideoWithId = DbVideo & { id: string };
 
 export default function ForYouScreen() {
   const isFocused = useIsFocused();
+  const [videos, setVideos] = useState<VideoWithId[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [lastDoc, setLastDoc] = useState<LastVisibleType | null>(null);
+  const toast = useToast();
+  const { toggleLike } = useVideoLikes();
+
+  const fetchVideos = useCallback(
+    async (lastVisible?: LastVisibleType) => {
+      try {
+        setIsLoading(true);
+
+        let videosQuery = query(
+          collection(db, "videos"),
+          where("isActive", "==", true),
+          where("isProcessed", "==", true),
+          orderBy("createdAt", "desc"),
+          limit(VIDEOS_PER_PAGE)
+        );
+
+        if (lastVisible) {
+          videosQuery = query(
+            collection(db, "videos"),
+            where("isActive", "==", true),
+            where("isProcessed", "==", true),
+            orderBy("createdAt", "desc"),
+            startAfter(lastVisible),
+            limit(VIDEOS_PER_PAGE)
+          );
+        }
+
+        const snapshot = await getDocs(videosQuery);
+        const newLastVisible = snapshot.docs[snapshot.docs.length - 1] as LastVisibleType;
+
+        const newVideos = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as VideoWithId[];
+
+        if (lastVisible) {
+          // When loading more, ensure no duplicates
+          setVideos(prev => {
+            const existingIds = new Set(prev.map(v => v.id));
+            const uniqueNewVideos = newVideos.filter(v => !existingIds.has(v.id));
+            return [...prev, ...uniqueNewVideos];
+          });
+        } else {
+          // Initial load
+          setVideos(newVideos);
+        }
+
+        if (newLastVisible) {
+          setLastDoc(newLastVisible);
+        }
+      } catch (error) {
+        console.error("Error fetching videos:", error);
+        toast.error("Failed to load videos. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [toast]
+  );
+
+  // Initial fetch
+  useEffect(() => {
+    fetchVideos();
+  }, [fetchVideos]);
+
+  const handleEndReached = () => {
+    if (!isLoading && lastDoc) {
+      fetchVideos(lastDoc);
+    }
+  };
+
+  const handleLike = useCallback(
+    async (videoId: string) => {
+      const video = videos.find(v => v.id === videoId);
+      if (!video) return;
+      await toggleLike(videoId, video.likes);
+    },
+    [toggleLike, videos]
+  );
 
   return (
     <View className="flex-1 bg-black">
       <VideoFeed
-        videos={DEMO_VIDEOS}
+        videos={videos}
         isScreenFocused={isFocused}
-        onEndReached={() => console.log("Reached end of feed")}
-        onLike={videoId => console.log("Liked video:", videoId)}
+        onEndReached={handleEndReached}
+        onLike={handleLike}
         onComment={videoId => console.log("Comment on video:", videoId)}
         onShare={videoId => console.log("Shared video:", videoId)}
+        isLoading={isLoading}
       />
     </View>
   );
