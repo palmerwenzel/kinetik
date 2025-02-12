@@ -3,8 +3,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { CreateGroupInput } from "@/types/domain/group";
 import { createGroupSchema, type CreateGroupFormData } from "@/schemas/group";
 import { db } from "@/lib/firebase/config";
-import { collection, addDoc, serverTimestamp, Timestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, Timestamp, doc, setDoc } from "firebase/firestore";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { router } from "expo-router";
 import type { GroupRole, GroupVisibility, GroupMembership } from "@/types/firebase/firestoreTypes";
 
@@ -12,6 +13,7 @@ export type FormData = CreateGroupFormData;
 
 export function useCreateGroupForm() {
   const { user } = useAuth();
+  const { getUserProfile } = useUserProfile();
   const form = useForm<FormData>({
     resolver: zodResolver(createGroupSchema),
     defaultValues: {
@@ -31,40 +33,34 @@ export function useCreateGroupForm() {
     },
   });
 
-  const onSubmit = async (data: FormData) => {
-    if (!user) {
-      throw new Error("User must be authenticated to create a group");
-    }
+  const handleSubmit = async (data: CreateGroupFormData) => {
+    if (!user) return;
 
     try {
+      // Get user profile for username
+      const profile = await getUserProfile(user.uid);
+
       // Create the group document
-      const groupsRef = collection(db, "groups");
-      const groupDoc = await addDoc(groupsRef, {
+      const groupDoc = await addDoc(collection(db, "groups"), {
         ...data,
         createdBy: user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        memberRoles: {
-          [user.uid]: "admin" as GroupRole, // Creator is automatically an admin
-        },
         memberCount: 1,
         isActive: true,
       });
 
-      // Create initial member document in the members subcollection
-      // This stores detailed member info including join date, activity, etc.
-      const membersRef = collection(groupDoc, "members");
-      await addDoc(membersRef, {
+      // Add creator as first member
+      await setDoc(doc(db, "groups", groupDoc.id, "members", user.uid), {
         uid: user.uid,
         role: "admin" as GroupRole,
         joinedAt: serverTimestamp(),
         isActive: true,
-        displayName: user.displayName || null,
+        username: profile?.username || null,
         photoURL: user.photoURL || null,
       });
 
-      // Navigate to home screen
-      router.replace("/(app)/home");
+      router.push(`/(groups)/${groupDoc.id}`);
     } catch (error) {
       console.error("Error creating group:", error);
       throw error;
@@ -73,7 +69,7 @@ export function useCreateGroupForm() {
 
   return {
     form,
-    onSubmit,
+    handleSubmit,
     isSubmitting: form.formState.isSubmitting,
   };
 }

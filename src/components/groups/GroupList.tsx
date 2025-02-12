@@ -5,6 +5,7 @@ import { Text } from "@/components/ui/Text";
 import { AnimatedContainer } from "@/components/ui/AnimatedContainer";
 import { Ionicons } from "@expo/vector-icons";
 import type { DbGroup } from "@/types/firebase/firestoreTypes";
+import { useVideoViews } from "@/hooks/useVideoViews";
 
 // Sample groups to populate the list
 const SAMPLE_GROUPS: Array<DbGroup & { id: string }> = [
@@ -219,47 +220,73 @@ const SAMPLE_GROUPS: Array<DbGroup & { id: string }> = [
 ];
 
 interface GroupListProps {
-  groups: Array<DbGroup & { id: string }>;
+  groups: Array<DbGroup & { id: string; unreadVideos?: Array<{ id: string; createdAt: Date }> }>;
 }
 
 export function GroupList({ groups }: GroupListProps) {
   const router = useRouter();
-  const allGroups = [...groups, ...SAMPLE_GROUPS];
 
   return (
     <View className="gap-y-4">
-      {allGroups.map(group => (
-        <Pressable key={group.id} onPress={() => router.push(`/(groups)/${group.id}`)}>
-          <AnimatedContainer variant="neu-surface" className="flex-row items-center p-4">
-            {/* Group Icon */}
-            <View className="bg-accent/10 rounded-full p-2 mr-4">
-              <Ionicons name="people" size={24} color="#FF6B00" />
-            </View>
-
-            {/* Group Info */}
-            <View className="flex-1">
-              <Text weight="medium" className="mb-1">
-                {group.name}
-              </Text>
-              <Text size="sm" intent="muted" numberOfLines={1}>
-                {group.description || "No description"}
-              </Text>
-            </View>
-
-            {/* Role Badge */}
-            <View className="ml-4">
-              <View className="bg-accent/10 rounded-full px-3 py-1">
-                <Text size="xs" className="text-orange-500">
-                  {group.memberRoles[group.createdBy]}
-                </Text>
-              </View>
-            </View>
-
-            {/* Arrow */}
-            <Ionicons name="chevron-forward" size={20} color="#666666" style={{ marginLeft: 8 }} />
-          </AnimatedContainer>
-        </Pressable>
+      {groups.map(group => (
+        <GroupListItem
+          key={group.id}
+          group={group}
+          onPress={() => router.push(`/(groups)/${group.id}`)}
+        />
       ))}
     </View>
+  );
+}
+
+interface GroupListItemProps {
+  group: DbGroup & { id: string; unreadVideos?: Array<{ id: string; createdAt: Date }> };
+  onPress: () => void;
+}
+
+function GroupListItem({ group, onPress }: GroupListItemProps) {
+  const { getUnreadCount } = useVideoViews(group.id);
+  const unreadCount = group.unreadVideos ? getUnreadCount(group.unreadVideos) : 0;
+
+  return (
+    <Pressable onPress={onPress}>
+      <AnimatedContainer variant="neu-surface" className="flex-row items-center p-4">
+        {/* Group Icon */}
+        <View className="bg-accent/10 rounded-full p-2 mr-4">
+          <Ionicons name="people" size={24} color="#FF6B00" />
+        </View>
+
+        {/* Group Info */}
+        <View className="flex-1">
+          <View className="flex-row items-center">
+            <Text weight="medium" className="mb-1">
+              {group.name}
+            </Text>
+            {unreadCount > 0 && (
+              <View className="ml-2 bg-orange-500 rounded-full px-2 py-0.5">
+                <Text size="xs" className="text-white font-medium">
+                  {unreadCount}
+                </Text>
+              </View>
+            )}
+          </View>
+          <Text size="sm" intent="muted" numberOfLines={1}>
+            {group.description || "No description"}
+          </Text>
+        </View>
+
+        {/* Role Badge */}
+        <View className="ml-4">
+          <View className="bg-accent/10 rounded-full px-3 py-1">
+            <Text size="xs" className="text-orange-500">
+              {group.memberRoles[group.createdBy]}
+            </Text>
+          </View>
+        </View>
+
+        {/* Arrow */}
+        <Ionicons name="chevron-forward" size={20} color="#666666" style={{ marginLeft: 8 }} />
+      </AnimatedContainer>
+    </Pressable>
   );
 }

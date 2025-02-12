@@ -5,19 +5,38 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "kinetik",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kinetik.app",
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "bundleIdentifier": "app.kinetik",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "associatedDomains": ["applinks:kinetik.app"]
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "app.kinetik",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "kinetik",
+              "host": "*"
+            },
+            {
+              "scheme": "https",
+              "host": "*.kinetik.app"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",

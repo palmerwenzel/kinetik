@@ -48,7 +48,7 @@ export interface DbGroupMember {
   role: GroupRole;
   joinedAt: Timestamp;
   isActive: boolean;
-  displayName: string | null;
+  username: string | null;
   photoURL: string | null;
 }
 
@@ -95,4 +95,16 @@ export interface DbVideoLike {
   videoId: string;
   userId: string;
   createdAt: Timestamp;
+}
+
+export interface DbGroupInvite {
+  code: string; // Secure invite code
+  groupId: string; // Reference to parent group
+  invitedBy: string; // UID of inviter
+  maxUses: number; // Maximum number of times this invite can be used
+  usedCount: number; // Current use count
+  role: GroupRole; // Role to assign to invited users
+  createdAt: Timestamp;
+  expiresAt: Timestamp;
+  isRevoked: boolean; // Allow admins to revoke invites
 }

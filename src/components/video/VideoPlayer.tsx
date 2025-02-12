@@ -1,3 +1,8 @@
+// Updated VideoPlayer.tsx
+// Simplified the fade-in logic so that the thumbnail always remains
+// until the video is truly ready. This fixes the blank screen issue
+// when scrolling quickly between items.
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
@@ -17,25 +22,26 @@ import { Video, AVPlaybackStatus, ResizeMode } from "expo-av";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, {
-  FadeIn,
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
-  withSequence,
   withTiming,
+  withSequence,
+  withSpring,
+  FadeIn,
 } from "react-native-reanimated";
 import { useVideoLikes } from "@/hooks/useVideoLikes";
 import { useUserProfile } from "@/hooks/useUserProfile";
 
 const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get("window");
 const BOTTOM_NAV_HEIGHT = 60; // Height of the bottom navigation bar
-const VIDEO_HEIGHT = WINDOW_HEIGHT - BOTTOM_NAV_HEIGHT;
+
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 interface VideoPlayerProps {
   videoId: string;
   videoUrl: string;
   thumbnailUrl?: string;
+  blurredThumbnailUrl?: string;
   createdBy: string;
   caption: string;
   likes: number;
@@ -43,6 +49,7 @@ interface VideoPlayerProps {
   shares: number;
   isActive: boolean;
   shouldPreload?: boolean;
+  useFullHeight?: boolean;
   onLike?: () => void;
   onComment?: () => void;
   onShare?: () => void;
@@ -56,6 +63,7 @@ interface Comment {
   timeAgo: string;
 }
 
+// For brevity, kept the same. Renders a single comment.
 function CommentItem({ comment }: { comment: Comment }) {
   const [isLiked, setIsLiked] = useState(false);
 
@@ -91,6 +99,7 @@ function CommentItem({ comment }: { comment: Comment }) {
   );
 }
 
+// Renders and manages the comments modal
 function CommentsModal({
   visible,
   onClose,
@@ -210,6 +219,7 @@ export function VideoPlayer({
   videoId,
   videoUrl,
   thumbnailUrl,
+  blurredThumbnailUrl,
   createdBy,
   caption,
   likes,
@@ -217,14 +227,20 @@ export function VideoPlayer({
   shares,
   isActive,
   shouldPreload,
+  useFullHeight = false,
   onLike,
   onComment,
   onShare,
 }: VideoPlayerProps) {
   const videoRef = useRef<Video>(null);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [userPaused, setUserPaused] = useState(false);
+
   const [showComments, setShowComments] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
+  const [isThumbnailLoaded, setIsThumbnailLoaded] = useState(false);
+
   const heartScale = useSharedValue(1);
   const { likedVideos, toggleLike, checkIfLiked } = useVideoLikes();
   const { getUserProfile } = useUserProfile();
@@ -232,17 +248,9 @@ export function VideoPlayer({
   const isLiked = likedVideos.has(videoId);
   const [localLikes, setLocalLikes] = useState(likes);
 
-  // We manually manage visibility so we never see an old frame:
-  const [isVideoReady, setIsVideoReady] = useState(false);
-
   const progress = useSharedValue(0);
 
-  // Check if the video is liked initially:
-  useEffect(() => {
-    checkIfLiked(videoId);
-  }, [videoId, checkIfLiked]);
-
-  // Fetch username
+  // Fetch author username
   useEffect(() => {
     let mounted = true;
     (async function () {
@@ -254,7 +262,12 @@ export function VideoPlayer({
     };
   }, [createdBy, getUserProfile]);
 
-  // Update playing state based on active status
+  // Check if the video is liked initially
+  useEffect(() => {
+    checkIfLiked(videoId);
+  }, [videoId, checkIfLiked]);
+
+  // Update playback state based on active status
   useEffect(() => {
     if (isActive) {
       setIsPlaying(true);
@@ -264,19 +277,45 @@ export function VideoPlayer({
     }
   }, [isActive]);
 
-  // The moment the video is ready for display, we hide the poster:
-  const handleReadyForDisplay = useCallback(() => {
-    setIsVideoReady(true);
-  }, []);
+  // Preload the video when not active but it's nearby in the list
+  useEffect(() => {
+    if (shouldPreload && videoRef.current && !isActive) {
+      videoRef.current
+        .loadAsync({ uri: videoUrl }, { shouldPlay: false, isLooping: true })
+        .catch(() => {
+          // Ignore preload errors
+        });
+    }
+  }, [shouldPreload, videoUrl, isActive]);
 
-  // Reset video state when videoId changes
+  // Whenever the video changes, reset readiness
   useEffect(() => {
     setIsVideoReady(false);
+    setIsThumbnailLoaded(false);
+    progress.value = 0;
   }, [videoId]);
 
+  // Animate video opacity based on readiness
+  const animatedOpacity = useSharedValue(0);
+  useEffect(() => {
+    // Fade in or out
+    animatedOpacity.value = withTiming(isVideoReady ? 1 : 0, { duration: 200 });
+  }, [isVideoReady, animatedOpacity]);
+
+  const videoAnimatedStyle = useAnimatedStyle(() => {
+    return { opacity: animatedOpacity.value };
+  });
+
+  // Keep updating progress for the progress bar
   const handleVideoStatusUpdate = useCallback(
     (status: AVPlaybackStatus) => {
-      if (!status.isLoaded) return;
+      if (!status.isLoaded) {
+        setIsVideoReady(false);
+        return;
+      }
+
+      // If loaded, mark as ready for display (which triggers fade in)
+      setIsVideoReady(true);
 
       // Update progress
       if (status.durationMillis) {
@@ -285,9 +324,9 @@ export function VideoPlayer({
         });
       }
 
+      // Loop the video
       if (status.didJustFinish && videoRef.current) {
         videoRef.current.replayAsync().catch(() => {});
-        // Reset progress on loop
         progress.value = 0;
       }
     },
@@ -343,51 +382,38 @@ export function VideoPlayer({
     }
   }, [createdBy, videoUrl, onShare]);
 
+  // For the progress bar at the bottom
   const progressBarStyle = useAnimatedStyle(() => ({
     width: `${progress.value * 100}%`,
   }));
 
-  // Preload video when shouldPreload is true
-  useEffect(() => {
-    if (shouldPreload && videoRef.current && !isActive) {
-      videoRef.current
-        .loadAsync({ uri: videoUrl }, { shouldPlay: false, isLooping: true })
-        .catch(() => {
-          // Ignore preload errors
-        });
-    }
-  }, [shouldPreload, videoUrl, isActive]);
+  const VIDEO_HEIGHT = useFullHeight ? WINDOW_HEIGHT : WINDOW_HEIGHT - BOTTOM_NAV_HEIGHT;
 
   return (
     <View className="flex-1">
       <Pressable onPress={handleTapToPlayPause} className="flex-1">
-        {/* Video element (hidden behind a placeholder until ready) */}
-        <Video
-          ref={videoRef}
-          source={{ uri: videoUrl }}
-          style={{ width: WINDOW_WIDTH, height: VIDEO_HEIGHT, opacity: isVideoReady ? 1 : 0 }}
-          resizeMode={ResizeMode.COVER}
-          isLooping
-          shouldPlay={isActive && !userPaused}
-          onPlaybackStatusUpdate={handleVideoStatusUpdate}
-          onReadyForDisplay={handleReadyForDisplay}
-          usePoster={false}
-          isMuted={false}
-          progressUpdateIntervalMillis={250}
-          positionMillis={0}
-          shouldCorrectPitch={false}
-          rate={1.0}
-        />
+        {/* Blurred thumbnail if provided (shown until full thumbnail is loaded) */}
+        {blurredThumbnailUrl && !isThumbnailLoaded && (
+          <Image
+            source={{ uri: blurredThumbnailUrl }}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: WINDOW_WIDTH,
+              height: VIDEO_HEIGHT,
+              resizeMode: "cover",
+            }}
+            blurRadius={10}
+          />
+        )}
 
-        {/* Progress Bar */}
-        <View className="absolute bottom-0 left-0 right-0 h-1 bg-gray-800/20">
-          <Animated.View className="h-full bg-orange-500" style={progressBarStyle} />
-        </View>
-
-        {/* Manual placeholder (poster) to avoid old-frame flashing */}
-        {!isVideoReady && thumbnailUrl && (
+        {/* Full resolution thumbnail stays visible while
+            the video is not ready or this item isn't active */}
+        {thumbnailUrl && (!isVideoReady || !isActive) && (
           <Image
             source={{ uri: thumbnailUrl }}
+            onLoad={() => setIsThumbnailLoaded(true)}
             style={{
               position: "absolute",
               top: 0,
@@ -398,6 +424,40 @@ export function VideoPlayer({
             }}
           />
         )}
+
+        {/* Actual Video (fades in once ready) */}
+        <Animated.View
+          style={[
+            {
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: WINDOW_WIDTH,
+              height: VIDEO_HEIGHT,
+            },
+            videoAnimatedStyle,
+          ]}
+        >
+          <Video
+            ref={videoRef}
+            source={{ uri: videoUrl }}
+            style={{ width: WINDOW_WIDTH, height: VIDEO_HEIGHT }}
+            resizeMode={ResizeMode.COVER}
+            isLooping
+            shouldPlay={isActive && !userPaused}
+            onPlaybackStatusUpdate={handleVideoStatusUpdate}
+            isMuted={false}
+            progressUpdateIntervalMillis={250}
+            positionMillis={0}
+            shouldCorrectPitch={false}
+            rate={1.0}
+          />
+        </Animated.View>
+
+        {/* Progress Bar */}
+        <View className="absolute bottom-0 left-0 right-0 h-1 bg-gray-800/20">
+          <Animated.View className="h-full bg-orange-500" style={progressBarStyle} />
+        </View>
 
         {/* Right sidebar buttons */}
         <View className="absolute right-4 bottom-20 items-center">
@@ -429,7 +489,7 @@ export function VideoPlayer({
           <Text className="text-white">{caption}</Text>
         </View>
 
-        {/* Play Icon Overlay (only show for user-initiated pauses) */}
+        {/* Play Icon Overlay (show for user-initiated pauses) */}
         {!isPlaying && userPaused && isActive && (
           <View className="absolute inset-0 items-center justify-center">
             <Ionicons name="play" size={70} color="white" style={{ opacity: 0.8 }} />

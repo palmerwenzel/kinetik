@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { View, RefreshControl } from "react-native";
+import { useCallback, useState } from "react";
+import { View, RefreshControl, ScrollView, TouchableOpacity } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Text } from "@/components/ui/Text";
 import { AnimatedContainer } from "@/components/ui/AnimatedContainer";
@@ -10,6 +10,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useGroup } from "@/hooks/useGroup";
 import { Button } from "@/components/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
+import { useUserGroups } from "@/hooks/useUserGroups";
 
 export default function GroupVideoFeedScreen() {
   const { id } = useLocalSearchParams();
@@ -18,8 +19,9 @@ export default function GroupVideoFeedScreen() {
   const isFocused = useIsFocused();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { group, isLoading: isLoadingGroup } = useGroup(groupId);
-  const { videos, isLoading, error, hasMore, loadMore, refresh } = useGroupVideos(groupId);
+  const { groups: userGroups, isLoading: isLoadingUserGroups } = useUserGroups();
+  const { group, isLoading: isLoadingGroup, error } = useGroup(groupId);
+  const { videos, isLoading, hasMore, loadMore, refresh } = useGroupVideos(groupId);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -45,7 +47,8 @@ export default function GroupVideoFeedScreen() {
     // Share functionality will be handled by VideoPlayer component
   }, []);
 
-  if (isLoadingGroup) {
+  // Show loading state while checking groups
+  if (isLoadingGroup || isLoadingUserGroups) {
     return (
       <View className="flex-1 items-center justify-center">
         <LoadingSpinner />
@@ -53,47 +56,97 @@ export default function GroupVideoFeedScreen() {
     );
   }
 
-  if (!group) {
+  // If there's an error (including permissions error)
+  if (error) {
     return (
       <View className="flex-1 items-center justify-center p-4">
-        <Text className="text-center mb-4">This group doesn't exist or you don't have access.</Text>
+        <View className="bg-error/10 rounded-full p-6 mb-6">
+          <Ionicons name="alert-circle" size={48} color="#FF3B30" />
+        </View>
+        <Text size="xl" weight="bold" className="text-center mb-2">
+          {error === "Missing or insufficient permissions." ? "No Access" : "Something went wrong"}
+        </Text>
+        <Text intent="muted" className="text-center mb-6">
+          {error === "Missing or insufficient permissions."
+            ? "You don't have permission to view this group. Try joining the group first."
+            : error}
+        </Text>
+        <View className="w-full space-y-4">
+          <Button
+            variant="neu-pressed"
+            textComponent={<Text>Go Back</Text>}
+            onPress={() => router.back()}
+            className="w-full"
+          />
+          <Button
+            variant="neu-accent"
+            textComponent={<Text intent="button-accent">Find Groups</Text>}
+            onPress={() => router.push("/(app)/explore")}
+            className="w-full"
+          />
+        </View>
+      </View>
+    );
+  }
+
+  // If user has no groups, show create group CTA
+  if (!userGroups || userGroups.length === 0) {
+    return (
+      <View className="flex-1 items-center justify-center p-4">
+        <View className="bg-accent/10 rounded-full p-6 mb-6">
+          <Ionicons name="people" size={48} color="#FF6B00" />
+        </View>
+        <Text size="xl" weight="bold" className="text-center mb-2">
+          Create Your First Group
+        </Text>
+        <Text intent="muted" className="text-center mb-6">
+          Start sharing videos with your friends by creating a group!
+        </Text>
         <Button
-          variant="neu-pressed"
-          textComponent={<Text>Go Back</Text>}
-          onPress={() => router.back()}
+          variant="neu-accent"
+          textComponent={
+            <View className="flex-row items-center">
+              <Ionicons name="add-circle-outline" size={20} color="#FFFFFF" className="mr-2" />
+              <Text intent="button-accent">Create Group</Text>
+            </View>
+          }
+          onPress={() => router.push("/(groups)/createGroup")}
         />
       </View>
     );
   }
 
-  if (error) {
-    return (
-      <View className="flex-1 items-center justify-center p-4">
-        <Text intent="error" className="text-center mb-4">
-          {error}
-        </Text>
-        <Button variant="neu-pressed" textComponent={<Text>Try Again</Text>} onPress={refresh} />
-      </View>
-    );
+  // If group doesn't exist or user doesn't have access, redirect to groups list
+  if (!group) {
+    router.replace("/(app)");
+    return null;
   }
 
   return (
     <View className="flex-1">
-      <AnimatedContainer variant="flat-surface" className="flex-1">
+      <AnimatedContainer variant="flat-surface" padding="none" className="flex-1">
         {/* Group Header */}
-        <View className="absolute top-0 left-0 right-0 z-10 bg-black/50 px-4 py-3">
-          <View className="flex-row items-center">
-            <Button
-              variant="ghost"
-              size="icon"
-              textComponent={<Ionicons name="arrow-back" size={24} color="white" />}
-              onPress={() => router.back()}
-              className="mr-3"
-            />
-            <View>
-              <Text className="text-white font-semibold text-lg">{group.name}</Text>
-              <Text className="text-white/80 text-sm">{videos.length} videos</Text>
+        <View className="absolute top-3 left-0 right-0 z-10 px-4 py-3">
+          <View className="flex-row items-center justify-between">
+            <TouchableOpacity onPress={() => router.back()} className="p-2 -m-2">
+              <Ionicons name="chevron-back" size={28} color="white" />
+            </TouchableOpacity>
+
+            <View className="flex-1 max-w-[50%] items-center mx-4">
+              <Text numberOfLines={2} className="text-white font-semibold text-lg text-center">
+                {group.name}
+              </Text>
+              <Text numberOfLines={1} className="text-white/80 text-sm">
+                {videos.length} videos
+              </Text>
             </View>
+
+            <TouchableOpacity
+              onPress={() => router.push(`/(groups)/${groupId}/chat`)}
+              className="p-2 -m-2"
+            >
+              <Ionicons name="chevron-forward" size={28} color="white" />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -128,7 +181,8 @@ export default function GroupVideoFeedScreen() {
             onLike={handleLike}
             onComment={handleComment}
             onShare={handleShare}
-            isLoading={isLoading}
+            useFullHeight
+            groupId={groupId}
           />
         )}
       </AnimatedContainer>

@@ -1,11 +1,17 @@
+// Updated VideoFeed.tsx
+// Only minor or no structural changes here; the main fix is in VideoPlayer.tsx
+// but we include the full file as requested.
+
 import { useCallback, useRef, useState, useEffect } from "react";
 import { Dimensions, View, FlatList, ViewToken } from "react-native";
 import { VideoPlayer } from "./VideoPlayer";
+import { useVideoViews } from "@/hooks/useVideoViews";
 
 interface VideoItem {
   id: string;
   videoUrl: string;
   thumbnailUrl?: string;
+  blurredThumbnailUrl?: string;
   createdBy: string;
   caption: string;
   likes: number;
@@ -17,6 +23,8 @@ interface VideoItem {
 interface VideoFeedProps {
   videos: VideoItem[];
   isScreenFocused: boolean;
+  useFullHeight?: boolean;
+  groupId?: string;
   onEndReached?: () => void;
   onLike?: (videoId: string) => void;
   onComment?: (videoId: string) => void;
@@ -25,7 +33,7 @@ interface VideoFeedProps {
 
 const { height: WINDOW_HEIGHT } = Dimensions.get("window");
 const BOTTOM_NAV_HEIGHT = 60; // Height of the bottom navigation bar
-const VIDEO_HEIGHT = WINDOW_HEIGHT - BOTTOM_NAV_HEIGHT;
+const MINIMUM_VIEW_TIME = 2000; // 2 seconds minimum view time
 
 // Track preloaded video URLs with their positions relative to current
 const preloadCache = new Map<string, "prev" | "current" | "next">();
@@ -33,16 +41,49 @@ const preloadCache = new Map<string, "prev" | "current" | "next">();
 export function VideoFeed({
   videos,
   isScreenFocused,
+  useFullHeight = false,
+  groupId,
   onEndReached,
   onLike,
   onComment,
   onShare,
 }: VideoFeedProps) {
+  const VIDEO_HEIGHT = useFullHeight ? WINDOW_HEIGHT : WINDOW_HEIGHT - BOTTOM_NAV_HEIGHT;
   const [activeIndex, setActiveIndex] = useState(0);
+  const { markAsViewed } = useVideoViews();
+  const viewTimeoutRef = useRef<NodeJS.Timeout>();
+  const lastViewedRef = useRef<string>();
+
   const viewabilityConfig = {
     itemVisiblePercentThreshold: 80,
     minimumViewTime: 250,
   };
+
+  // Mark video as viewed after minimum view time
+  useEffect(() => {
+    if (isScreenFocused && videos[activeIndex]) {
+      const currentVideoId = videos[activeIndex].id;
+
+      // Clear any existing timeout
+      if (viewTimeoutRef.current) {
+        clearTimeout(viewTimeoutRef.current);
+      }
+
+      // Only set timeout if this video hasn't been viewed in this session
+      if (lastViewedRef.current !== currentVideoId) {
+        viewTimeoutRef.current = setTimeout(() => {
+          markAsViewed(currentVideoId);
+          lastViewedRef.current = currentVideoId;
+        }, MINIMUM_VIEW_TIME);
+      }
+    }
+
+    return () => {
+      if (viewTimeoutRef.current) {
+        clearTimeout(viewTimeoutRef.current);
+      }
+    };
+  }, [activeIndex, isScreenFocused, videos, markAsViewed]);
 
   // Manage the sliding window of loaded videos
   useEffect(() => {
@@ -85,6 +126,7 @@ export function VideoFeed({
             videoId={item.id}
             videoUrl={item.videoUrl}
             thumbnailUrl={item.thumbnailUrl}
+            blurredThumbnailUrl={item.blurredThumbnailUrl}
             createdBy={item.createdBy}
             caption={item.caption}
             likes={item.likes}
@@ -95,11 +137,12 @@ export function VideoFeed({
             onComment={() => onComment?.(item.id)}
             onShare={() => onShare?.(item.id)}
             shouldPreload={shouldPreload}
+            useFullHeight={useFullHeight}
           />
         </View>
       );
     },
-    [activeIndex, isScreenFocused, onLike, onComment, onShare]
+    [activeIndex, isScreenFocused, onLike, onComment, onShare, VIDEO_HEIGHT, useFullHeight]
   );
 
   return (
