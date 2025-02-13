@@ -319,15 +319,18 @@ export function VideoPlayer({
 
       // Update progress
       if (status.durationMillis) {
-        progress.value = withTiming(status.positionMillis / status.durationMillis, {
+        // Calculate progress, rounding up but capping at 1.0 (100%)
+        const rawProgress = status.positionMillis / status.durationMillis;
+        const currentProgress = Math.min(Math.ceil(rawProgress * 100) / 100, 1);
+        progress.value = withTiming(currentProgress, {
           duration: 250,
         });
       }
 
-      // Loop the video
+      // Only reset progress after the video has actually started playing again
       if (status.didJustFinish && videoRef.current) {
         videoRef.current.replayAsync().catch(() => {});
-        progress.value = 0;
+        // Don't reset progress here - let the next update handle it
       }
     },
     [progress]

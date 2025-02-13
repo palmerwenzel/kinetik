@@ -21,11 +21,12 @@ function generateInviteCode(): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const length = 10;
   let result = "";
-  const randomValues = new Uint8Array(length);
-  crypto.getRandomValues(randomValues);
+
   for (let i = 0; i < length; i++) {
-    result += chars[randomValues[i] % chars.length];
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    result += chars[randomIndex];
   }
+
   return result;
 }
 

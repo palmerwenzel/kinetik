@@ -126,12 +126,23 @@ service cloud.firestore {
     function isValidVideoUpdate() {
       let video = request.resource.data;
       let changes = video.diff(resource.data).affectedKeys();
-      return changes.hasAny(['caption', 'interests', 'groups', 'isActive', 'likes', 'comments', 'shares', 'updatedAt']) &&
+      
+      // Allow like/comment/share count updates and ensure increment operations are valid
+      let isMetricsUpdate = 
+        changes.hasOnly(['likes', 'comments', 'shares', 'updatedAt']) &&
         (
-          (isOwner(resource.data.createdBy) &&
-           !changes.hasAny(['videoUrl', 'thumbnailUrl', 'createdBy', 'createdAt'])) ||
-          changes.hasOnly(['likes', 'comments', 'shares', 'updatedAt'])
+          // Allow increment/decrement of metrics
+          (request.resource.data.likes is number && resource.data.likes is number) ||
+          (request.resource.data.comments is number && resource.data.comments is number) ||
+          (request.resource.data.shares is number && resource.data.shares is number)
         );
+      
+      // Allow owner to update content
+      let isOwnerUpdate = isOwner(resource.data.createdBy) && 
+        changes.hasAny(['caption', 'interests', 'groups', 'isActive']) &&
+        !changes.hasAny(['videoUrl', 'thumbnailUrl', 'createdBy', 'createdAt']);
+      
+      return isAuthenticated() && (isMetricsUpdate || isOwnerUpdate);
     }
 
     // Video comment validation
@@ -156,19 +167,36 @@ service cloud.firestore {
     // Video like validation
     function isValidLike() {
       let like = request.resource.data;
+      let videoDoc = get(/databases/$(database)/documents/videos/$(like.videoId));
+      
       return like.keys().hasAll([
         'userId',
         'videoId',
         'createdAt'
       ]) &&
       like.userId == request.auth.uid &&
-      exists(/databases/$(database)/documents/videos/$(like.videoId));
+      like.createdAt is timestamp &&
+      // Ensure video exists and user has access
+      videoDoc != null && 
+      hasVideoAccess(videoDoc.data);
     }
 
     function isValidUserLikes() {
       let data = request.resource.data;
-      return data.keys().hasAll(['likedVideos', 'updatedAt']) &&
-        data.likedVideos is map;
+      let incomingData = request.resource.data;
+      let existingData = resource != null ? resource.data : {};
+      
+      // Allow partial updates
+      let updatedFields = incomingData.diff(existingData).affectedKeys();
+      
+      return (
+        // For new documents
+        (resource == null && data.keys().hasAll(['likedVideos', 'updatedAt'])) ||
+        // For updates
+        (resource != null && updatedFields.hasOnly(['likedVideos', 'updatedAt']))
+      ) &&
+      incomingData.likedVideos is map &&
+      incomingData.updatedAt is timestamp;
     }
 
     // Video views validation
@@ -198,20 +226,14 @@ service cloud.firestore {
     // Global likes collection
     match /likes/{likeId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && 
-        isValidLike() && 
-        likeId == request.resource.data.videoId + '_' + request.auth.uid;
-      allow delete: if isAuthenticated() && 
-        resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && isValidLike();
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }
 
     // User's liked videos collection
     match /userLikes/{userId} {
       allow read: if isAuthenticated();
-      allow create, update: if isOwner(userId) && (
-        !exists(/databases/$(database)/documents/userLikes/$(userId)) || 
-        isValidUserLikes()
-      );
+      allow create, update: if isOwner(userId) && isValidUserLikes();
       allow delete: if isOwner(userId);
     }
 
@@ -326,6 +348,34 @@ service cloud.firestore {
         ) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usedCount', 'isRevoked']);
       }
+
+      // Requests subcollection
+      match /requests/{requestId} {
+        // Allow reading requests if authenticated and either:
+        // 1. You're a group admin, OR
+        // 2. You're the requester
+        allow read: if isAuthenticated() && (
+          isGroupAdmin(groupId) ||
+          request.auth.uid == resource.data.uid
+        );
+        
+        // Allow creating requests if authenticated and:
+        // 1. You're not already a member
+        // 2. The group membership is not "closed"
+        // 3. You're creating a request for yourself
+        allow create: if isAuthenticated() && 
+          !exists(/databases/$(database)/documents/groups/$(groupId)/members/$(request.auth.uid)) &&
+          get(/databases/$(database)/documents/groups/$(groupId)).data.membership != "closed" &&
+          request.resource.data.keys().hasAll(['uid', 'groupId', 'status', 'createdAt', 'updatedAt', 'username', 'photoURL']) &&
+          request.resource.data.uid == request.auth.uid &&
+          request.resource.data.groupId == groupId &&
+          request.resource.data.status == "pending";
+        
+        // Only allow admins to update request status
+        allow update: if isAuthenticated() &&
+          isGroupAdmin(groupId) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt']);
+      }
     }
 
     // Allow collection group queries on members subcollection
@@ -335,6 +385,11 @@ service cloud.firestore {
 
     // Allow collection group queries on invites for validation
     match /{path=**}/invites/{inviteId} {
+      allow read: if isAuthenticated();
+    }
+
+    // Allow collection group queries on requests for validation
+    match /{path=**}/requests/{requestId} {
       allow read: if isAuthenticated();
     }
 

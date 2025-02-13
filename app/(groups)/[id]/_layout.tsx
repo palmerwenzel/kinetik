@@ -25,9 +25,9 @@ export default function GroupLayout() {
         }}
       />
       <Tabs.Screen
-        name="manage"
+        name="dashboard"
         options={{
-          title: "Manage",
+          title: "Dashboard",
           tabBarIcon: ({ color }) => <Ionicons name="settings-outline" size={24} color={color} />,
         }}
       />

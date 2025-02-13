@@ -28,6 +28,40 @@
       ]
     },
     {
+      "collectionGroup": "invites",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "code", "order": "ASCENDING" },
+        { "fieldPath": "isRevoked", "order": "ASCENDING" },
+        { "fieldPath": "expiresAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "invites",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isRevoked", "order": "ASCENDING" },
+        { "fieldPath": "expiresAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "requests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "requests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "uid", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "likes",
       "queryScope": "COLLECTION",
       "fields": [
@@ -40,6 +74,22 @@
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "videoId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "comments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "videoId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "comments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "createdBy", "order": "ASCENDING" },
         { "fieldPath": "createdAt", "order": "DESCENDING" }
       ]
     }
@@ -59,6 +109,46 @@
       "collectionGroup": "messages",
       "fieldPath": "createdAt",
       "indexes": [{ "order": "DESCENDING", "queryScope": "COLLECTION" }]
+    },
+    {
+      "collectionGroup": "invites",
+      "fieldPath": "code",
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }]
+    },
+    {
+      "collectionGroup": "invites",
+      "fieldPath": "expiresAt",
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }]
+    },
+    {
+      "collectionGroup": "invites",
+      "fieldPath": "isRevoked",
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }]
+    },
+    {
+      "collectionGroup": "requests",
+      "fieldPath": "uid",
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }]
+    },
+    {
+      "collectionGroup": "requests",
+      "fieldPath": "status",
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }]
+    },
+    {
+      "collectionGroup": "requests",
+      "fieldPath": "createdAt",
+      "indexes": [{ "order": "DESCENDING", "queryScope": "COLLECTION_GROUP" }]
+    },
+    {
+      "collectionGroup": "comments",
+      "fieldPath": "createdAt",
+      "indexes": [{ "order": "DESCENDING", "queryScope": "COLLECTION_GROUP" }]
+    },
+    {
+      "collectionGroup": "comments",
+      "fieldPath": "createdBy",
+      "indexes": [{ "order": "ASCENDING", "queryScope": "COLLECTION_GROUP" }]
     }
   ]
 }

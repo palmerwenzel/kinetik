@@ -108,3 +108,13 @@ export interface DbGroupInvite {
   expiresAt: Timestamp;
   isRevoked: boolean; // Allow admins to revoke invites
 }
+
+export interface DbGroupRequest {
+  uid: string; // User who requested to join
+  groupId: string; // Reference to parent group
+  status: "pending" | "approved" | "rejected";
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  username: string | null;
+  photoURL: string | null;
+}

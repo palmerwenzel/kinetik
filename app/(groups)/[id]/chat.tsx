@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -126,7 +126,7 @@ export default function GroupChatScreen() {
                 </Text>
               </View>
               <TouchableOpacity
-                onPress={() => router.push(`/(groups)/${groupId}/manage`)}
+                onPress={() => router.replace(`/(groups)/${groupId}/dashboard`)}
                 className="p-2 -m-2"
               >
                 <Ionicons name="settings-outline" size={24} color="black" />
