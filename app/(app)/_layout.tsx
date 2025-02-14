@@ -36,6 +36,7 @@ export default function AppLayout() {
         }}
       />
 
+      {/* Main tab screens */}
       <Tabs.Screen
         name="home/index"
         options={{

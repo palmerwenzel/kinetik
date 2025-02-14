@@ -6,58 +6,27 @@ import {
   KeyboardAvoidingView,
   Platform,
   FlatList,
-  Dimensions,
   ActivityIndicator,
   Keyboard,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/Text";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { AnimatedContainer } from "@/components/ui/AnimatedContainer";
 import { useAuth } from "@/hooks/useAuth";
 import { useGroup } from "@/hooks/useGroup";
 import { useGroupChat, ChatMessage } from "@/hooks/useGroupChat";
-import { GestureDetector, Gesture } from "react-native-gesture-handler";
-import Animated, {
-  useAnimatedStyle,
-  withSpring,
-  useSharedValue,
-  runOnJS,
-} from "react-native-reanimated";
+import { useRouter } from "expo-router";
 
 export default function GroupChatScreen() {
   const { id } = useLocalSearchParams();
   const groupId = typeof id === "string" ? id : id[0];
-  const router = useRouter();
   const { user } = useAuth();
-  const { group } = useGroup(groupId);
+  const { group, isAdmin = false } = useGroup(groupId);
   const { messages, isLoading, error, sendMessage } = useGroupChat(groupId);
   const [messageText, setMessageText] = useState("");
-
-  // Gesture handling for swipe navigation
-  const translateX = useSharedValue(0);
-  const screenWidth = Dimensions.get("window").width;
-
-  const panGesture = Gesture.Pan()
-    .onChange(event => {
-      // Only allow right swipe (to go back to videos)
-      if (event.translationX > 0) {
-        translateX.value = event.translationX;
-      }
-    })
-    .onEnd(event => {
-      if (event.translationX > screenWidth * 0.3) {
-        translateX.value = withSpring(screenWidth, {}, () => {
-          runOnJS(router.back)();
-        });
-      } else {
-        translateX.value = withSpring(0);
-      }
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-  }));
+  const router = useRouter();
 
   const handleSend = useCallback(async () => {
     if (!messageText.trim() || !user) return;
@@ -108,55 +77,59 @@ export default function GroupChatScreen() {
   }
 
   return (
-    <GestureDetector gesture={panGesture}>
-      <Animated.View className="flex-1" style={animatedStyle}>
-        <AnimatedContainer variant="flat-surface" padding="none" className="flex-1">
-          {/* Header */}
-          <View className="absolute top-3 left-0 right-0 z-10 px-4 py-3">
+    <View className="flex-1">
+      <AnimatedContainer variant="flat-surface" padding="none" className="flex-1">
+        {/* Header */}
+        <SafeAreaView edges={["top"]} className="bg-surface dark:bg-surface-dark">
+          <View className="px-4 py-3">
             <View className="flex-row items-center justify-between">
               <TouchableOpacity onPress={() => router.back()} className="p-2 -m-2">
                 <Ionicons name="chevron-back" size={28} color="black" />
               </TouchableOpacity>
-              <View className="flex-1 max-w-[50%] items-center mx-4">
+              <View className="flex-1 items-center mx-4">
                 <Text numberOfLines={1} className="font-semibold text-lg text-center">
                   {group?.name || "Chat"}
                 </Text>
-                <Text numberOfLines={1} className="text-text/60 text-sm">
+                <Text intent="muted" size="sm" className="text-center">
                   {messages.length} messages
                 </Text>
               </View>
-              <TouchableOpacity
-                onPress={() => router.replace(`/(groups)/${groupId}/dashboard`)}
-                className="p-2 -m-2"
-              >
-                <Ionicons name="settings-outline" size={24} color="black" />
-              </TouchableOpacity>
+              {isAdmin && (
+                <TouchableOpacity
+                  onPress={() => router.push(`/(groups)/${groupId}/dashboard`)}
+                  className="p-2 -m-2"
+                >
+                  <Ionicons name="settings-outline" size={24} color="black" />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
+        </SafeAreaView>
 
-          {/* Messages */}
-          <View className="flex-1 mt-20">
-            {isLoading ? (
-              <View className="flex-1 items-center justify-center">
-                <ActivityIndicator size="large" />
-              </View>
-            ) : (
-              <FlatList
-                data={messages}
-                renderItem={renderMessage}
-                inverted
-                contentContainerStyle={{ flexGrow: 1 }}
-                keyExtractor={item => item.id}
-                onScrollBeginDrag={Keyboard.dismiss}
-              />
-            )}
-          </View>
+        {/* Messages */}
+        <View className="flex-1">
+          {isLoading ? (
+            <View className="flex-1 items-center justify-center">
+              <ActivityIndicator size="large" />
+            </View>
+          ) : (
+            <FlatList
+              data={messages}
+              renderItem={renderMessage}
+              inverted
+              contentContainerStyle={{ flexGrow: 1, paddingTop: 16 }}
+              keyExtractor={item => item.id}
+              onScrollBeginDrag={Keyboard.dismiss}
+            />
+          )}
+        </View>
 
-          {/* Input */}
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={100}
-          >
+        {/* Input */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 60}
+        >
+          <SafeAreaView edges={["bottom"]}>
             <AnimatedContainer
               variant="neu-inset"
               className="flex-row items-end px-4 py-3 border-t border-border/20 dark:border-border-dark/20"
@@ -183,9 +156,9 @@ export default function GroupChatScreen() {
                 <Ionicons name="arrow-up" size={24} color="white" />
               </TouchableOpacity>
             </AnimatedContainer>
-          </KeyboardAvoidingView>
-        </AnimatedContainer>
-      </Animated.View>
-    </GestureDetector>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+      </AnimatedContainer>
+    </View>
   );
 }

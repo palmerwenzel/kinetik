@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { CreateGroupInput } from "@/types/domain/group";
 import { createGroupSchema, type CreateGroupFormData } from "@/schemas/group";
 import { db } from "@/lib/firebase/config";
 import { collection, addDoc, serverTimestamp, Timestamp, doc, setDoc } from "firebase/firestore";
@@ -60,7 +59,7 @@ export function useCreateGroupForm() {
         photoURL: user.photoURL || null,
       });
 
-      router.push(`/(groups)/${groupDoc.id}`);
+      router.push(`/(app)/home/(groups)/${groupDoc.id}`);
     } catch (error) {
       console.error("Error creating group:", error);
       throw error;

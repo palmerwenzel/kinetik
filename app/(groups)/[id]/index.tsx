@@ -11,8 +11,9 @@ import { useGroup } from "@/hooks/useGroup";
 import { Button } from "@/components/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
 import { useUserGroups } from "@/hooks/useUserGroups";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function GroupVideoFeedScreen() {
+export default function GroupDetailScreen() {
   const { id } = useLocalSearchParams();
   const groupId = typeof id === "string" ? id : id[0];
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function GroupVideoFeedScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { groups: userGroups, isLoading: isLoadingUserGroups } = useUserGroups();
-  const { group, isLoading: isLoadingGroup, error } = useGroup(groupId);
+  const { group, isLoading: isLoadingGroup, error, isAdmin = false } = useGroup(groupId);
   const { videos, isLoading, hasMore, loadMore, refresh } = useGroupVideos(groupId);
 
   const handleRefresh = useCallback(async () => {
@@ -126,53 +127,76 @@ export default function GroupVideoFeedScreen() {
     <View className="flex-1">
       <AnimatedContainer variant="flat-surface" padding="none" className="flex-1">
         {/* Group Header */}
-        <View className="absolute top-3 left-0 right-0 z-10 px-4 py-3">
-          <View className="flex-row items-center justify-between">
-            <TouchableOpacity onPress={() => router.back()} className="p-2 -m-2">
-              <Ionicons name="chevron-back" size={28} color="white" />
-            </TouchableOpacity>
-
-            <View className="flex-1 max-w-[50%] items-center mx-4">
-              <Text numberOfLines={2} className="text-white font-semibold text-lg text-center">
-                {group.name}
-              </Text>
-              <Text numberOfLines={1} className="text-white/80 text-sm">
-                {videos.length} videos
-              </Text>
+        <SafeAreaView edges={["top"]} className="absolute left-0 right-0 z-10">
+          <View className="px-4 py-3">
+            {/* Group Info */}
+            <View className="flex-row items-center justify-between mb-3">
+              <TouchableOpacity onPress={() => router.back()} className="p-2 -m-2">
+                <Ionicons name="chevron-back" size={28} color="white" />
+              </TouchableOpacity>
+              <View className="flex-1 items-center mx-4">
+                <Text numberOfLines={2} className="text-white font-semibold text-lg text-center">
+                  {group.name}
+                </Text>
+                <Text numberOfLines={1} className="text-white/80 text-sm">
+                  {videos.length} videos
+                </Text>
+              </View>
+              <View style={{ width: 28 }} />
             </View>
 
-            <TouchableOpacity
-              onPress={() => router.push(`/(groups)/${groupId}/chat`)}
-              className="p-2 -m-2"
-            >
-              <Ionicons name="chevron-forward" size={28} color="white" />
-            </TouchableOpacity>
+            {/* Navigation Buttons */}
+            <View className="flex-row justify-center gap-x-4">
+              <TouchableOpacity
+                className="bg-white/20 px-4 py-2 rounded-full flex-row items-center"
+                onPress={() => router.push(`/(groups)/${groupId}/chat`)}
+              >
+                <Ionicons name="chatbubble-outline" size={20} color="white" className="mr-2" />
+                <Text className="text-white">Chat</Text>
+              </TouchableOpacity>
+              {isAdmin && (
+                <TouchableOpacity
+                  className="bg-white/20 px-4 py-2 rounded-full flex-row items-center"
+                  onPress={() => router.push(`/(groups)/${groupId}/dashboard`)}
+                >
+                  <Ionicons name="settings-outline" size={20} color="white" className="mr-2" />
+                  <Text className="text-white">Settings</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
-        </View>
+        </SafeAreaView>
 
         {/* Video Feed */}
         {videos.length === 0 && !isLoading ? (
-          <View className="flex-1 items-center justify-center p-4">
-            <View className="bg-accent/10 rounded-full p-6 mb-6">
-              <Ionicons name="videocam" size={48} color="#FF6B00" />
+          <SafeAreaView edges={["top", "bottom"]} className="flex-1">
+            <View className="flex-1 items-center justify-center p-4">
+              <View className="bg-accent/10 rounded-full p-6 mb-6">
+                <Ionicons name="videocam" size={48} color="#FF6B00" />
+              </View>
+              <Text size="xl" weight="bold" className="text-center mb-2">
+                No Videos Yet
+              </Text>
+              <Text intent="muted" className="text-center mb-6">
+                Be the first to share a video in this group!
+              </Text>
+              <Button
+                variant="neu-accent"
+                textComponent={
+                  <View className="flex-row items-center">
+                    <Ionicons
+                      name="add-circle-outline"
+                      size={20}
+                      color="#FFFFFF"
+                      className="mr-2"
+                    />
+                    <Text intent="button-accent">Create Video</Text>
+                  </View>
+                }
+                onPress={() => router.push("/(app)/create")}
+              />
             </View>
-            <Text size="xl" weight="bold" className="text-center mb-2">
-              No Videos Yet
-            </Text>
-            <Text intent="muted" className="text-center mb-6">
-              Be the first to share a video in this group!
-            </Text>
-            <Button
-              variant="neu-accent"
-              textComponent={
-                <View className="flex-row items-center">
-                  <Ionicons name="add-circle-outline" size={20} color="#FFFFFF" className="mr-2" />
-                  <Text intent="button-accent">Create Video</Text>
-                </View>
-              }
-              onPress={() => router.push("/(create)")}
-            />
-          </View>
+          </SafeAreaView>
         ) : (
           <VideoFeed
             videos={videos}

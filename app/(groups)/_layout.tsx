@@ -5,8 +5,7 @@ export default function GroupsLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        presentation: "modal",
-        animation: "slide_from_bottom",
+        animation: "slide_from_right",
       }}
     />
   );

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { useColorScheme } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+import { seedGroups } from "@/lib/utils/seedGroups";
 
 // TODO: Create a profile edit screen at app/(app)/profile/edit/index.tsx
 // This will allow users to update their profile information like username, photo, etc.
@@ -36,6 +37,15 @@ export default function ProfileScreen() {
     }
     setIsRefreshing(false);
   }, [user?.uid, getUserProfile]);
+
+  const handleSeedGroups = async (userId: string) => {
+    try {
+      await seedGroups(userId);
+      console.log("Successfully seeded groups");
+    } catch (error) {
+      console.error("Error seeding groups:", error);
+    }
+  };
 
   return (
     <View className="flex-1 bg-background dark:bg-surface-dark">
@@ -131,6 +141,33 @@ export default function ProfileScreen() {
                 </View>
               </AnimatedContainer>
             </View>
+
+            {/* Development Tools - only show in development */}
+            {__DEV__ && (
+              <View className="mt-8">
+                <AnimatedContainer variant="neu-surface" className="p-4">
+                  <View className="flex-row items-center mb-3">
+                    <View className="bg-accent/10 rounded-full p-2 mr-3">
+                      <Ionicons name="construct" size={24} color="#FF6B00" />
+                    </View>
+                    <Text weight="medium">Development Tools</Text>
+                  </View>
+                  <Button
+                    variant="neu-pressed"
+                    onPress={() => user?.uid && handleSeedGroups(user.uid)}
+                    className="w-full"
+                    textComponent={
+                      <View className="flex-row items-center">
+                        <Ionicons name="add-circle-outline" size={20} color="#FF6B00" />
+                        <Text intent="accent" className="ml-2">
+                          Seed 10 Test Groups
+                        </Text>
+                      </View>
+                    }
+                  />
+                </AnimatedContainer>
+              </View>
+            )}
 
             {/* Sign Out Button */}
             <View className="mt-8">
